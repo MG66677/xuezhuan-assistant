@@ -377,3 +377,20 @@ a{color:var(--primary);text-decoration:none}
 .device-info-item a { color: var(--primary); text-decoration: none; font-weight: 500; }
 .device-info-item a:hover { text-decoration: underline; }
 .device-info-item .ip-label { color: var(--text-muted); font-size: 11px; }
+
+/* ===== Operations Center Enhancements ===== */
+.ops-analytics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 8px; }
+.oa-item { text-align: center; padding: 8px; background: var(--bg); border-radius: 8px; }
+.oa-value { font-size: 22px; font-weight: 800; color: var(--primary); }
+.oa-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.ai-badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; background: rgba(34,197,94,0.1); border: 1px solid var(--success); border-radius: 12px; font-size: 12px; color: var(--success); font-weight: 500; }
+.ai-badge.offline { background: rgba(153,153,153,0.1); border-color: #999; color: var(--text-muted); }
+.ops-analytics { padding: 4px 0; }
+.follow-up-list { margin-top: 8px; max-height: 200px; overflow-y: auto; }
+.follow-up-item { padding: 8px 10px; background: var(--bg); border-radius: 6px; margin-bottom: 6px; font-size: 13px; }
+.follow-up-item strong { display: block; margin-bottom: 2px; color: var(--text); }
+.follow-up-item p { color: var(--text-secondary); font-size: 12px; }
+
+/* ===== Chat AI Status ===== */
+.chat-ai-status { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 8px; font-size: 11px; background: rgba(34,197,55,0.1); color: var(--success); }
+.chat-ai-status.offline { background: rgba(153,153,153,0.1); color: var(--text-muted); }

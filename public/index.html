@@ -117,10 +117,23 @@
 
     <!-- 运营中心 -->
     <section class="page" id="page-operations">
-      <div class="page-header"><h1><i class="lci lci-bot"></i> 运营中心</h1></div>
+      <div class="page-header"><h1><i class="lci lci-bot"></i> 运营中心</h1><div class="header-actions"><span id="opsTip" class="page-date" style="font-size:12px;"></span></div></div>
       <div class="ops-grid">
-        <div class="card"><div class="card-header"><h3><i class="lci lci-file-text"></i> 自动发帖</h3></div><div class="card-body"><button class="btn btn-primary" onclick="generatePosts()"><i class="lci lci-zap"></i> 生成帖子</button><div id="opsStatus"></div></div></div>
-        <div class="card"><div class="card-header"><h3><i class="lci lci-message-square"></i> 客户跟进</h3></div><div class="card-body"><button class="btn btn-primary" onclick="followUp()"><i class="lci lci-send"></i> 跟进客户</button><div id="followUpResult"></div></div></div>
+        <div class="card"><div class="card-header"><h3><i class="lci lci-file-text"></i> 自动发帖</h3></div><div class="card-body">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+            <button class="btn btn-primary btn-sm" onclick="generatePosts()"><i class="lci lci-zap"></i> 生成帖子</button>
+            <button class="btn btn-outline btn-sm" onclick="openAiContentModal()"><i class="lci lci-wand"></i> AI 写文案</button>
+          </div>
+          <div id="opsStatus"></div>
+        </div></div>
+        <div class="card"><div class="card-header"><h3><i class="lci lci-message-square"></i> 客户跟进</h3></div><div class="card-body">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+            <button class="btn btn-primary btn-sm" onclick="followUp()"><i class="lci lci-send"></i> 跟进客户</button>
+            <button class="btn btn-outline btn-sm" onclick="openReplyModal()"><i class="lci lci-message-circle"></i> 回复建议</button>
+          </div>
+          <div id="followUpResult"></div>
+        </div></div>
+        <div class="card"><div class="card-header"><h3><i class="lci lci-bar-chart"></i> 运营概览</h3></div><div class="card-body"><div id="opsAnalytics" class="ops-analytics"></div></div></div>
       </div>
       <div class="card" style="margin-top:16px;"><div class="card-header"><h3><i class="lci lci-list"></i> 帖子管理</h3></div><div class="card-body" id="postsList"></div></div>
       <div class="card" style="margin-top:16px;"><div class="card-header"><h3><i class="lci lci-users"></i> 客户管理</h3></div><div class="card-body" id="leadsList"></div></div>
@@ -206,6 +219,27 @@
     <div class="form-group"><label>分类</label><input id="financeCategory" placeholder="例：接单、兼职"></div>
     <div class="form-group"><label>备注</label><input id="financeNote" placeholder="备注信息"></div>
     <div class="modal-actions"><button class="btn-cancel" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="saveFinance()">保存</button></div>
+  </div>
+</div>
+
+<!-- AI 写文案弹窗 -->
+<div class="modal-overlay" id="aiContentModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h2><i class="lci lci-wand"></i> AI 写推广文案</h2>
+    <div class="form-group"><label>推广主题</label><input id="aiTopic" placeholder="例：Python编程接单、Excel数据处理" value="编程接单服务"></div>
+    <div class="form-group"><label>价格（可选）</label><input id="aiPrice" placeholder="例：¥100起"></div>
+    <div class="modal-actions"><button class="btn-cancel" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="generateAiContent()">生成</button></div>
+  </div>
+</div>
+
+<!-- 回复建议弹窗 -->
+<div class="modal-overlay" id="replyModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h2><i class="lci lci-message-circle"></i> AI 回复建议</h2>
+    <div class="form-group"><label>客户问题</label><textarea id="replyQuestion" placeholder="输入客户的问题，AI 会给出回复建议" style="min-height:80px;"></textarea></div>
+    <button class="btn btn-primary" onclick="getReplySuggestions()">获取建议</button>
+    <div id="replyResult" class="result-box" style="margin-top:12px;white-space:pre-wrap;"></div>
+    <div class="modal-actions" style="margin-top:12px;"><button class="btn-cancel" onclick="closeModal()">关闭</button></div>
   </div>
 </div>
 

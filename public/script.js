@@ -50,7 +50,7 @@ const r=await api("GET","dashboard");
 if(!r.stats)return;
 const statHtml=Object.entries(r.stats).map(([k,v])=>`<div class="stat-card">
   <div class="stat-value">${v}</div>
-  <div class="stat-label">${{"tasks_todo":"待办任务","notes_count":"笔记数","flashcards_count":"闪卡数","total_leads":"客户数","total_revenue":"总收入","pending_posts":"待发帖"}[k]||k}</div>
+  <div class="stat-label">${{"tasks_todo":"待办任务","notes_count":"笔记数","flashcards_count":"闪卡数","total_leads":"客户数","total_revenue":"总收入","pending_posts":"待发帖","ai_ready":"AI 已就绪"}[k]||k}</div>
 </div>`).join("");
 $("dashStats").innerHTML=statHtml;
 
@@ -380,6 +380,37 @@ async function loadDeviceInfo() {
     return '<div class="device-info-item"><i class="lci lci-wifi"></i> <a href="http://' + ip.address + ':' + r.port + '/" target="_blank">http://' + ip.address + ':' + r.port + '/</a> <span class="ip-label">(' + ip.name + ')</span></div>';
   }).join("");
   container.innerHTML = '<div class="device-info">' + html + '</div>';
+}
+
+// ===== 运营中心 - AI 功能 ===== 
+function openAiContentModal(){
+  $("aiTopic").value="编程接单服务";
+  $("aiPrice").value="";
+  $("aiContentModal").style.display="flex";
+}
+async function generateAiContent(){
+  var topic=($("aiTopic")?.value||"").trim();
+  if(!topic){alert("请输入推广主题");return}
+  var price=$("aiPrice")?.value||"";
+  var btn=document.querySelector("#aiContentModal .btn-primary");
+  btn.disabled=true;btn.textContent="生成中...";
+  var r=await api("POST","auto-ops/run",{action:"ai-content",topic:topic,price:price});
+  btn.disabled=false;btn.textContent="生成";
+  if(r.ok){showToast("✅ AI 写完了，已添加到待发布");closeModal();loadPosts();loadOpsStatus()}
+  else showToast("❌ "+ (r.error||"生成失败"));
+}
+function openReplyModal(){
+  $("replyQuestion").value="";
+  $("replyResult").innerHTML="";
+  $("replyModal").style.display="flex";
+}
+async function getReplySuggestions(){
+  var q=($("replyQuestion")?.value||"").trim();
+  if(!q){alert("请输入客户问题");return}
+  $("replyResult").innerHTML="<p>正在获取建议...</p>";
+  var r=await api("POST","auto-ops/run",{action:"reply-suggestion",question:q});
+  if(r.ok)$("replyResult").innerHTML=r.suggestions.replace(/\\n/g,"<br>");
+  else $("replyResult").innerHTML=r.error||"获取失败";
 }
 
 // ===== 快速添加工具 ===== 

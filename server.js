@@ -15,6 +15,10 @@ const PYTHON = "C:\\Users\\21938\\.cache\\codex-runtimes\\codex-primary-runtime\
 [PUBLIC, DATA_DIR, FE_OUTPUT].forEach(d => { try { fs.mkdirSync(d, { recursive: true }); } catch {} });
 const DB_FILE = path.join(DATA_DIR, "database.json");
 const CHAT_FILE = path.join(DATA_DIR, "chat.json");
+// DeepSeek / OpenAI 兼容 API 配置
+const AI_API_KEY = process.env.DEEPSEEK_API_KEY || process.env.OPENAI_API_KEY || "";
+const AI_API_URL = process.env.AI_API_URL || "https://api.deepseek.com/v1/chat/completions";
+const AI_MODEL = process.env.AI_MODEL || "deepseek-chat"; // deepseek-chat / gpt-4o-mini / etc
 let db = {};
 let chatHistory = [];
 let agentMode = "study";
@@ -65,6 +69,47 @@ function generateReply(context) {
   return "好的，我了解你的需求了。方便留一下联系方式或者具体说一下需要处理什么吗？我帮你评估报价和交付时间。";
 }
 
+// ===== AI API 调用（DeepSeek / ChatGPT 兼容） =====
+async function callAI(messages) {
+  if (!AI_API_KEY) return null;
+  try {
+    const https = require("https");
+    const data = JSON.stringify({
+      model: AI_MODEL,
+      messages: messages,
+      temperature: 0.7,
+      max_tokens: 2000,
+    });
+    return new Promise((resolve) => {
+      const urlObj = new URL(AI_API_URL);
+      const opts = {
+        hostname: urlObj.hostname,
+        port: urlObj.port || 443,
+        path: urlObj.pathname,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + AI_API_KEY,
+          "Content-Length": Buffer.byteLength(data),
+        },
+      };
+      const req = https.request(opts, (res) => {
+        let body = "";
+        res.on("data", (chunk) => body += chunk);
+        res.on("end", () => {
+          try {
+            const j = JSON.parse(body);
+            resolve(j.choices?.[0]?.message?.content || null);
+          } catch { resolve(null); }
+        });
+      });
+      req.on("error", () => resolve(null));
+      req.write(data);
+      req.end();
+    });
+  } catch { return null; }
+}
+
 async function handle(req, res) {
   const u = url.parse(req.url, true);
   const m = req.method;
@@ -99,21 +144,42 @@ async function handleApi(method, segs, u, req, res) {
     chatHistory.push({ role: "user", content: msg, created_at: now() });
     const m = msg.toLowerCase(); const isEarn = agentMode === "earn";
     let reply = "";
-    if (m.includes("保存") && (m.includes("笔记")||m.includes("记录"))) { const t = msg.replace(/保存|笔记|记录|：|:/g,"").trim().slice(0,30)||"快速笔记"; db.notes.push({id:nextId(),title:t,content:msg,tags:"快速笔记",created_at:today(),updated_at:today()}); saveDb(); reply="已保存笔记「"+t+"」"; }
-    else if (m.includes("创建任务")||(m.includes("任务")&&(m.includes("创建")||m.includes("添加")))) { const t = msg.replace(/创建任务|添加任务|任务|：|:/g,"").trim()||"新任务"; db.tasks.push({id:nextId(),title:t,description:"",deadline:"",priority:"中",category:isEarn?"赚钱":"学业",status:"待办",created_at:today()}); saveDb(); reply="已创建任务「"+t+"」"; }
-    else if (m.includes("切换模式")||m.includes("换赚钱")||m.includes("换学业")) { agentMode=agentMode==="study"?"earn":"study"; reply="已切换到"+(agentMode==="study"?("🏗️ 学业"):("💵 赚钱"))+"模式"; }
-    else if (isEarn) {
-      if (m.includes("副业")||m.includes("赚钱")||m.includes("兼职")) reply="\n\n1⃣ 技能接单：Python编程、PPT设计、视频剪辑\n2⃣ 内容创作：写小红书/知乎/公众号\n3⃣ 知识变现：家教、卖笔记、考研资料\n4⃣ 轻创业：闲鱼转卖\n\n建议从技能接单开始，需求多门槛低。";
-      else reply="\n• 运营中心自动发帖\n• 管理客户和项目\n• 记账和报价\n• 写文案回复\n\n去看看运营中心？";
+    // 本地指令优先处理
+    if (m.includes("保存") && (m.includes("笔记")||m.includes("记录"))) {
+      const t = msg.replace(/保存|笔记|记录|：|:/g,"").trim().slice(0,30)||"快速笔记";
+      db.notes.push({id:nextId(),title:t,content:msg,tags:"快速笔记",created_at:today(),updated_at:today()}); saveDb();
+      reply="已保存笔记「"+t+"」";
+    } else if (m.includes("创建任务")||(m.includes("任务")&&(m.includes("创建")||m.includes("添加")))) {
+      const t = msg.replace(/创建任务|添加任务|任务|：|:/g,"").trim()||"新任务";
+      db.tasks.push({id:nextId(),title:t,description:"",deadline:"",priority:"中",category:isEarn?"赚钱":"学业",status:"待办",created_at:today()}); saveDb();
+      reply="已创建任务「"+t+"」";
+    } else if (m.includes("切换模式")||m.includes("换赚钱")||m.includes("换学业")) {
+      agentMode=agentMode==="study"?"earn":"study";
+      reply="已切换到"+(agentMode==="study"?("🏗️ 学业"):("💵 赚钱"))+"模式";
+    } else if (m.includes("副业")||m.includes("赚钱")||m.includes("兼职")||m.includes("接单")) {
+      reply="\n1⃣ 技能接单：Python / Excel / PPT / 视频剪辑\n2⃣ 内容创作：小红书 / 知乎 / 公众号\n3⃣ 知识变现：家教 / 卖笔记 / 考研资料\n4⃣ 轻创业：闲鱼转卖\n\n💡 建议从技能接单开始，需求多门槛低。需要我帮你写文案或报价吗？";
+    } else if (AI_API_KEY) {
+      // AI 智能回复
+      const systemPrompt = "你是马振奥的学赚助手，一个帮助用户管理学业和赚钱的AI助手。\n用户当前模式：" + (isEarn ? "赚钱模式" : "学业模式") + "\n你可以：\n- 回答学习和副业问题\n- 当用户说「保存笔记：xxx」时，保存笔记\n- 当用户说「创建任务：xxx」时，创建任务\n- 给出实用的建议和行动方案\n回复要简洁、实用、友好。";
+      const recentHistory = chatHistory.slice(-20).map(h => ({ role: h.role === "user" ? "user" : "assistant", content: h.content }));
+      const aiReply = await callAI([{ role: "system", content: systemPrompt }, ...recentHistory]);
+      if (aiReply) {
+        reply = aiReply;
+      } else {
+        reply = "AI 服务暂时不可用，请稍后再试。你可以先试试：\n• 「保存笔记：xxx」快速记录\n• 「创建任务：xxx」添加待办";
+      }
     } else {
-      if (m.includes("复习")||m.includes("考试")||m.includes("期末")) reply="\n\n1⃣ 整理笔记梳理框架\n2⃣ 制作闪卡反复记\n3⃣ 真题练习\n4⃣ 组队学习\n\n需要我帮你规划吗？";
-      else if (m.includes("作业")||m.includes("论文")||m.includes("报告")) reply="作业辅助：搭大纲、找思路、润色、参考文献推荐。说具体题目我来帮你。";
-      else reply="你好！我是马振奥的学赚助手，当前"+(isEarn?("💵 赚钱"):("🏗️ 学业"))+"\n\n你可以：\n• 跟我聊学习/副业\n• 「保存笔记：[内容]」快速记录\n• 「创建任务：[标题]」添加待办\n• 「换赚钱」/「换学业」切换\n• 去左侧栏用工具";
+      // 无 API Key 时的本地回复
+      if (isEarn) {
+        reply = "当前赚钱模式！💵\n\n📌 常用指令：\n• 「保存笔记：xxx」快速记录\n• 「创建任务：xxx」添加待办\n• 「换学业」切换到学习模式\n\n🔧 左侧栏还有接单工具和运营中心可以帮你！";
+      } else {
+        reply = "你好！我是马振奥的学赚助手 🏗️\n\n📌 常用指令：\n• 「保存笔记：xxx」快速记录\n• 「创建任务：xxx」添加待办\n• 「换赚钱」切换到赚钱模式\n\n💡 提示：设置 DEEPSEEK_API_KEY 环境变量可解锁 AI 智能对话！";
+      }
     }
     chatHistory.push({ role: "assistant", content: reply, created_at: now() });
     if (chatHistory.length > 200) chatHistory = chatHistory.slice(-100);
     fs.writeFileSync(CHAT_FILE, JSON.stringify(chatHistory), "utf8");
-    return j(200, { reply, mode: agentMode === "study" ? "学业" : "赚钱" });
+    return j(200, { reply, mode: agentMode === "study" ? "学业" : "赚钱", ai_enabled: !!AI_API_KEY });
   }
   if (p === "chat/history") return j(200, chatHistory);
   if (p === "chat/clear" && method === "POST") { chatHistory = []; fs.writeFileSync(CHAT_FILE, JSON.stringify(chatHistory), "utf8"); return j(200, { ok: true }); }
@@ -123,7 +189,7 @@ async function handleApi(method, segs, u, req, res) {
   if (p === "dashboard" && method === "GET") {
     const todo = db.tasks.filter(t => t.status === "待办");
     return j(200, {
-      stats: { tasks_todo: todo.length, notes_count: db.notes.length, flashcards_count: db.flashcards.length, total_leads: db.leads.length, total_revenue: db.finance.total, pending_posts: db.posts.filter(p => p.status === "pending").length },
+      stats: { tasks_todo: todo.length, notes_count: db.notes.length, flashcards_count: db.flashcards.length, total_leads: db.leads.length, total_revenue: db.finance.total, pending_posts: db.posts.filter(p => p.status === "pending").length, ai_ready: AI_API_KEY ? 1 : 0 },
       tasks: todo.slice(0, 8).map(t => ({ id: t.id, title: t.title, priority: t.priority, deadline: t.deadline, category: t.category })),
       leads: db.leads.slice(-5).reverse(), finance: db.finance,
     });
@@ -167,11 +233,62 @@ async function handleApi(method, segs, u, req, res) {
   if (p === "reply" && method === "POST") return j(200, { reply: generateReply(body.context || "") });
 
   if (p === "auto-ops/run" && method === "POST") {
-    if (body.action === "generate") { const ls=generateListings();ls.forEach(l=>{db.posts.push({id:db.posts.length+1,platform:l.platform,title:l.title,content:l.content,price:l.price,status:"pending",created_at:now(),posted_at:null,views:0,inquiries:0})});saveDb();return j(200,{ok:true,count:ls.length}) }
-    if (body.action === "follow-up") { const fu=db.leads.filter(l=>l.status==="新咨询"); return j(200,{ok:true,follow_ups:fu.length,leads:fu}); }
+    if (body.action === "generate") {
+      const ls=generateListings();ls.forEach(l=>{db.posts.push({id:db.posts.length+1,platform:l.platform,title:l.title,content:l.content,price:l.price,status:"pending",created_at:now(),posted_at:null,views:0,inquiries:0})});saveDb();return j(200,{ok:true,count:ls.length})
+    }
+    if (body.action === "follow-up") {
+      const fu=db.leads.filter(l=>l.status==="新咨询");
+      let followUpMsgs = [];
+      if (AI_API_KEY) {
+        // AI 生成跟进消息
+        for (const lead of fu.slice(0, 5)) {
+          const prompt = "你是一个接单助理，需要给客户发跟进消息。客户需求：" + (lead.requirement || "") + "。生成一条简短友好的跟进消息，询问是否需要帮助，50字以内。";
+          const reply = await callAI([{ role: "user", content: prompt }]);
+          followUpMsgs.push({ lead_id: lead.id, name: lead.name, message: reply || "您好，请问您对这个项目还有兴趣吗？有什么我可以帮您的吗？" });
+        }
+      } else {
+        followUpMsgs = fu.slice(0, 10).map(l => ({ lead_id: l.id, name: l.name, message: "您好，请问您对这个项目还有兴趣吗？有什么我可以帮您的吗？" }));
+      }
+      return j(200,{ok:true,follow_ups:fu.length,leads:fu,messages:followUpMsgs});
+    }
+    if (body.action === "ai-content") {
+      // AI 生成推广内容
+      if (!AI_API_KEY) return j(200,{ok:false,error:"未配置 AI API Key"});
+      const topic = body.topic || "编程接单服务";
+      const prompt = "你是一个小红书/闲鱼文案写手。请为「" + topic + "」写一条推广文案，包括标题和正文，50-100字，要有吸引力，带 emoji。";
+      const content = await callAI([{ role: "user", content: prompt }]);
+      if (content) {
+        db.posts.push({id:db.posts.length+1,platform:"小红书",title:topic,content:content,price:body.price||"",status:"pending",created_at:now(),posted_at:null,views:0,inquiries:0});
+        saveDb();
+        return j(200,{ok:true,content:content});
+      }
+      return j(200,{ok:false,error:"AI 生成失败"});
+    }
+    if (body.action === "reply-suggestion") {
+      // AI 回复建议
+      if (!AI_API_KEY) return j(200,{ok:false,error:"未配置 AI API Key"});
+      const question = body.question || "";
+      const prompt = "你是一个接单客服，客户问：「" + question + "」，请给出3条不同风格的回复建议，每条20-40字。用数字编号。";
+      const suggestions = await callAI([{ role: "user", content: prompt }]);
+      return j(200,{ok:true,suggestions: suggestions || "1. 好的，我了解一下您的需求\n2. 方便说一下具体要求吗？\n3. 我给您报个价"});
+    }
     return j(200,{ok:true});
   }
-  if (p === "auto-ops/status" && method === "GET") return j(200, { pending_posts: db.posts.filter(p=>p.status==="pending").length, posted: db.posts.filter(p=>p.status==="posted").length, total_posts: db.posts.length, leads: db.leads.length, new_leads: db.leads.filter(l=>l.status==="新咨询").length, revenue: db.finance.total });
+  if (p === "auto-ops/status" && method === "GET") {
+    const now_h = new Date().getHours();
+    const tips = now_h < 6 ? "夜深了，建议明天再运营" : now_h < 12 ? "☀️ 上午好，适合发帖和跟进客户" : now_h < 18 ? "🌤 下午好，适合处理订单" : "🌙 晚上好，适合内容创作";
+    return j(200, {
+      pending_posts: db.posts.filter(p=>p.status==="pending").length,
+      posted: db.posts.filter(p=>p.status==="posted").length,
+      total_posts: db.posts.length,
+      leads: db.leads.length,
+      new_leads: db.leads.filter(l=>l.status==="新咨询").length,
+      revenue: db.finance.total,
+      ai_ready: !!AI_API_KEY,
+      tip: tips,
+      today_income: db.finance.records.filter(r => r.created_at === today() && r.type === "收入").reduce((s, r) => s + r.amount, 0),
+    });
+  }
 
   if (p === "tools/scraper" && method === "POST") { const r = await runPython("scraper.py", [body.url, body.selector||"body", body.format||"json", FE_OUTPUT]); return j(200, r); }
   if (p === "tools/excel" && method === "POST") { const args=[body.command,body.input,body.output||""]; if(body.extra)args.push(body.extra); const r=await runPython("excel_tools.py",args); return j(200,r); }
