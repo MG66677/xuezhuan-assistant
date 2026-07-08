@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学赚助手 - 首页</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/lucide@0.475.0/font/lucide.css">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <div class="logo"><i class="lci lci-graduation-cap"></i><span>学赚助手</span></div>
+    </div>
+    <nav class="sidebar-nav">
+        <a href="/" class="nav-item active"><i class="lci lci-layout-dashboard"></i><span>仪表盘</span></a>
+        <a href="/chat" class="nav-item"><i class="lci lci-message-circle"></i><span>AI 对话</span></a>
+        <div class="nav-divider"></div>
+        <div class="nav-label">学业工具</div>
+        <a href="/notes" class="nav-item"><i class="lci lci-notebook"></i><span>笔记管理</span></a>
+        <a href="/tasks" class="nav-item"><i class="lci lci-list-checks"></i><span>任务看板</span></a>
+        <a href="/flashcards" class="nav-item"><i class="lci lci-brain"></i><span>复习闪卡</span></a>
+        <a href="/schedule" class="nav-item"><i class="lci lci-calendar"></i><span>课程表</span></a>
+        <div class="nav-divider"></div>
+        <div class="nav-label">赚钱工具</div>
+        <a href="/projects" class="nav-item"><i class="lci lci-briefcase"></i><span>项目管理</span></a>
+    </nav>
+    <div class="sidebar-footer">
+        <button class="mode-toggle" onclick="toggleMode()"><i class="lci lci-repeat"></i><span id="modeLabel">学业</span></button>
+    </div>
+</aside>
+<main class="main-content">
+    <div class="page-header">
+        <h1>仪表盘</h1>
+        <p class="text-muted">今天也要加油哦</p>
+    </div>
+    <div class="stats-grid" id="statsGrid"><div class="empty-state"><i class="lci lci-loader"></i><p>加载中...</p></div></div>
+    <div class="dashboard-grid">
+        <div class="card">
+            <div class="card-header"><h3><i class="lci lci-list-checks"></i> 待办任务</h3><a href="/tasks" class="text-link">查看全部</a></div>
+            <div class="card-body"><div id="taskList"></div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><h3><i class="lci lci-notebook"></i> 最近笔记</h3><a href="/notes" class="text-link">查看全部</a></div>
+            <div class="card-body"><div id="notesList"></div></div>
+        </div>
+    </div>
+</main>
+<script src="/script.js"></script>
+</body>
+</html>

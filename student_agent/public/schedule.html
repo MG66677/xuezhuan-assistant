@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学赚助手 - 课程表</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/lucide@0.475.0/font/lucide.css">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<aside class="sidebar">
+    <div class="sidebar-header"><div class="logo"><i class="lci lci-graduation-cap"></i><span>学赚助手</span></div></div>
+    <nav class="sidebar-nav">
+        <a href="/" class="nav-item"><i class="lci lci-layout-dashboard"></i><span>仪表盘</span></a>
+        <a href="/chat" class="nav-item"><i class="lci lci-message-circle"></i><span>AI 对话</span></a><div class="nav-divider"></div>
+        <div class="nav-label">学业工具</div>
+        <a href="/notes" class="nav-item"><i class="lci lci-notebook"></i><span>笔记管理</span></a>
+        <a href="/tasks" class="nav-item"><i class="lci lci-list-checks"></i><span>任务看板</span></a>
+        <a href="/flashcards" class="nav-item"><i class="lci lci-brain"></i><span>复习闪卡</span></a>
+        <a href="/schedule" class="nav-item active"><i class="lci lci-calendar"></i><span>课程表</span></a>
+        <div class="nav-divider"></div><div class="nav-label">赚钱工具</div>
+        <a href="/projects" class="nav-item"><i class="lci lci-briefcase"></i><span>项目管理</span></a>
+    </nav>
+    <div class="sidebar-footer"><button class="mode-toggle" onclick="toggleMode()"><i class="lci lci-repeat"></i><span id="modeLabel">学业</span></button></div>
+</aside>
+<main class="main-content">
+    <div class="page-header"><h1><i class="lci lci-calendar"></i> 课程表</h1><button class="btn btn-primary" onclick="openCourseEditor()"><i class="lci lci-plus"></i> 添加课程</button></div>
+    <div class="schedule-container"><div class="schedule-grid" id="scheduleGrid"></div></div>
+</main>
+<div class="modal-overlay" id="courseModal" style="display:none" onclick="closeModalOutside(event)">
+    <div class="modal modal-sm">
+        <div class="modal-header"><h3>添加课程</h3><button class="btn btn-ghost" onclick="closeModal()"><i class="lci lci-x"></i></button></div>
+        <div class="modal-body">
+            <div class="form-group"><label>课程名称</label><input type="text" id="courseName" placeholder="如：高等数学"></div>
+            <div class="form-row">
+                <div class="form-group"><label>星期</label><select id="courseDay"><option value="0">周一</option><option value="1">周二</option><option value="2">周三</option><option value="3">周四</option><option value="4">周五</option><option value="5">周六</option><option value="6">周日</option></select></div>
+                <div class="form-group"><label>开始时间</label><input type="time" id="courseStart" value="08:00"></div>
+                <div class="form-group"><label>结束时间</label><input type="time" id="courseEnd" value="09:35"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>教师</label><input type="text" id="courseTeacher" placeholder="可选"></div>
+                <div class="form-group"><label>地点</label><input type="text" id="courseLocation" placeholder="可选"></div>
+            </div>
+            <div class="form-group"><label>颜色</label>
+                <div class="color-picker" id="colorPicker">
+                    <div class="color-swatch selected" style="background:#4f6ef7" onclick="selectColor(this,'#4f6ef7')"></div>
+                    <div class="color-swatch" style="background:#22c55e" onclick="selectColor(this,'#22c55e')"></div>
+                    <div class="color-swatch" style="background:#f97316" onclick="selectColor(this,'#f97316')"></div>
+                    <div class="color-swatch" style="background:#ef4444" onclick="selectColor(this,'#ef4444')"></div>
+                    <div class="color-swatch" style="background:#8b5cf6" onclick="selectColor(this,'#8b5cf6')"></div>
+                    <div class="color-swatch" style="background:#06b6d4" onclick="selectColor(this,'#06b6d4')"></div>
+                    <div class="color-swatch" style="background:#eab308" onclick="selectColor(this,'#eab308')"></div>
+                    <div class="color-swatch" style="background:#ec4899" onclick="selectColor(this,'#ec4899')"></div>
+                    <input type="hidden" id="courseColor" value="#4f6ef7">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="saveCourse()">添加</button></div>
+    </div>
+</div>
+<script src="/script.js"></script>
+</body>
+</html>

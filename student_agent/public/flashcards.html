@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学赚助手 - 复习闪卡</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/lucide@0.475.0/font/lucide.css">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<aside class="sidebar">
+    <div class="sidebar-header"><div class="logo"><i class="lci lci-graduation-cap"></i><span>学赚助手</span></div></div>
+    <nav class="sidebar-nav">
+        <a href="/" class="nav-item"><i class="lci lci-layout-dashboard"></i><span>仪表盘</span></a>
+        <a href="/chat" class="nav-item"><i class="lci lci-message-circle"></i><span>AI 对话</span></a><div class="nav-divider"></div>
+        <div class="nav-label">学业工具</div>
+        <a href="/notes" class="nav-item"><i class="lci lci-notebook"></i><span>笔记管理</span></a>
+        <a href="/tasks" class="nav-item"><i class="lci lci-list-checks"></i><span>任务看板</span></a>
+        <a href="/flashcards" class="nav-item active"><i class="lci lci-brain"></i><span>复习闪卡</span></a>
+        <a href="/schedule" class="nav-item"><i class="lci lci-calendar"></i><span>课程表</span></a>
+        <div class="nav-divider"></div><div class="nav-label">赚钱工具</div>
+        <a href="/projects" class="nav-item"><i class="lci lci-briefcase"></i><span>项目管理</span></a>
+    </nav>
+    <div class="sidebar-footer"><button class="mode-toggle" onclick="toggleMode()"><i class="lci lci-repeat"></i><span id="modeLabel">学业</span></button></div>
+</aside>
+<main class="main-content">
+    <div class="page-header"><h1><i class="lci lci-brain"></i> 复习闪卡</h1><button class="btn btn-primary" onclick="openFlashcardEditor()"><i class="lci lci-plus"></i> 新建闪卡</button></div>
+    <div class="flashcard-layout">
+        <div class="flashcard-sidebar">
+            <div class="card"><div class="card-header"><h3>牌组</h3></div><div class="card-body"><div class="deck-list" id="deckList"></div></div></div>
+        </div>
+        <div class="flashcard-main"><div class="flashcard-viewer" id="flashcardViewer"><div class="empty-state"><i class="lci lci-brain"></i><p>加载中...</p></div></div></div>
+    </div>
+</main>
+<div class="modal-overlay" id="flashcardModal" style="display:none" onclick="closeModalOutside(event)">
+    <div class="modal modal-sm">
+        <div class="modal-header"><h3>新建闪卡</h3><button class="btn btn-ghost" onclick="closeModal()"><i class="lci lci-x"></i></button></div>
+        <div class="modal-body">
+            <div class="form-group"><label>正面（问题）</label><textarea id="fcFront" placeholder="输入问题..." class="modal-textarea" rows="3"></textarea></div>
+            <div class="form-group"><label>背面（答案）</label><textarea id="fcBack" placeholder="输入答案..." class="modal-textarea" rows="3"></textarea></div>
+            <div class="form-group"><label>牌组</label><input type="text" id="fcDeck" placeholder="默认" value="默认"></div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="saveFlashcard()">创建</button></div>
+    </div>
+</div>
+<script src="/script.js"></script>
+</body>
+</html>

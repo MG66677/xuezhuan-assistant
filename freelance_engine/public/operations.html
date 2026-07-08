@@ -1,0 +1,429 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>运营中心 - 副业引擎</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/lucide@0.475.0/font/lucide.css">
+<link rel="stylesheet" href="/style.css">
+<style>
+.ops-tabs { display:flex; gap:4px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:3px; margin-bottom:24px; flex-wrap:wrap; }
+.ops-tab { padding:8px 16px; border:none; border-radius:4px; font-size:13px; font-weight:500; cursor:pointer; background:transparent; color:var(--text-secondary); font-family:inherit; transition:var(--transition); }
+.ops-tab:hover { color:var(--text); }
+.ops-tab.active { background:var(--primary); color:#fff; }
+.ops-section { display:none; }
+.ops-section.active { display:block; }
+.lead-card, .project-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:16px; margin-bottom:10px; transition:var(--transition); }
+.lead-card:hover, .project-card:hover { border-color:var(--primary); }
+.lead-header, .project-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.lead-name { font-weight:600; font-size:15px; }
+.lead-source { font-size:12px; color:var(--text-muted); }
+.lead-status { padding:2px 8px; border-radius:8px; font-size:11px; font-weight:500; }
+.status-new { background:#eef2ff; color:var(--primary); }
+.status-negotiating { background:#fff7ed; color:#f97316; }
+.status-confirmed { background:#f0fdf4; color:#22c55e; }
+.reply-card { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:12px 16px; margin-bottom:8px; cursor:pointer; }
+.reply-card:hover { border-color:var(--primary); }
+.reply-label { font-weight:600; font-size:13px; margin-bottom:4px; }
+.reply-text { font-size:13px; color:var(--text-secondary); line-height:1.5; }
+.copy-hint { font-size:11px; color:var(--text-muted); margin-top:4px; }
+.empty-state-ops { text-align:center; padding:40px; color:var(--text-muted); }
+.empty-state-ops i { font-size:36px; display:block; margin-bottom:8px; }
+.listing-output { background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm); padding:16px; margin-top:12px; white-space:pre-wrap; font-size:13px; line-height:1.6; }
+.listing-title { font-size:16px; font-weight:600; margin-bottom:8px; }
+</style>
+</head>
+<body>
+<div class="tools-layout">
+    <aside class="tools-sidebar">
+        <h3 style="margin-top:8px;">🎯 运营中心</h3>
+        <div style="padding:0 12px;margin-bottom:12px;">
+            <a href="/dashboard" class="btn btn-ghost" style="width:100%;justify-content:center;font-size:13px;">
+                <i class="lci lci-arrow-left"></i> 返回工具台
+            </a>
+        </div>
+        <hr style="border:none;border-top:1px solid var(--border);margin:0 8px 12px;">
+        <div class="tool-nav-item active" onclick="switchOps('publish')"><i class="lci lci-send"></i> 发帖文案</div>
+        <div class="tool-nav-item" onclick="switchOps('leads')"><i class="lci lci-users"></i> 客户管理</div>
+        <div class="tool-nav-item" onclick="switchOps('projects')"><i class="lci lci-trello"></i> 项目跟踪</div>
+        <div class="tool-nav-item" onclick="switchOps('finance')"><i class="lci lci-wallet"></i> 财务统计</div>
+        <div class="tool-nav-item" onclick="switchOps('reply')"><i class="lci lci-message-square"></i> 话术助手</div>
+    </aside>
+
+    <main class="tools-content">
+        <!-- 发帖文案 -->
+        <div class="ops-section active" id="ops-publish">
+            <h2><i class="lci lci-send"></i> 一键生成发帖文案</h2>
+            <p style="color:var(--text-secondary);margin-bottom:20px;">选择平台，生成优化过的商品文案，复制去发布就行</p>
+            <div class="ops-tabs" id="platformTabs">
+                <button class="ops-tab active" onclick="selectPlatform('xianyu')">🐟 闲鱼</button>
+                <button class="ops-tab" onclick="selectPlatform('xiaohongshu')">📕 小红书</button>
+                <button class="ops-tab" onclick="selectPlatform('zhihu')">💡 知乎</button>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>技能关键词（可选）</label><input type="text" id="opsSkills" placeholder="Python/爬虫/Excel"></div>
+                <div class="form-group"><label>价格提示（可选）</label><input type="text" id="opsPrice" placeholder="¥100起"></div>
+            </div>
+            <div class="form-group"><label>额外说明（可选）</label><textarea id="opsNotes" rows="2" placeholder="有什么特别想强调的？"></textarea></div>
+            <button class="btn btn-primary" onclick="generateListing()"><i class="lci lci-magic-wand"></i> 生成文案</button>
+            <div id="listingResult" style="margin-top:16px;">
+                <div class="listing-output" id="listingOutput" style="display:none;"></div>
+            </div>
+        </div>
+
+        <!-- 客户管理 -->
+        <div class="ops-section" id="ops-leads">
+            <h2><i class="lci lci-users"></i> 客户管理</h2>
+            <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+                <button class="btn btn-primary btn-sm" onclick="showLeadForm()"><i class="lci lci-plus"></i> 添加客户</button>
+                <div class="search-bar" style="max-width:300px;"><i class="lci lci-search"></i><input type="text" placeholder="搜索客户..." oninput="searchLeads(this.value)"></div>
+            </div>
+            <div id="leadsList"></div>
+        </div>
+
+        <!-- 项目跟踪 -->
+        <div class="ops-section" id="ops-projects">
+            <h2><i class="lci lci-trello"></i> 项目跟踪</h2>
+            <button class="btn btn-primary btn-sm" onclick="showProjectForm()" style="margin-bottom:16px;"><i class="lci lci-plus"></i> 新建项目</button>
+            <div id="projectsList"></div>
+        </div>
+
+        <!-- 财务 -->
+        <div class="ops-section" id="ops-finance">
+            <h2><i class="lci lci-wallet"></i> 财务统计</h2>
+            <div class="stats-row" id="financeStats"></div>
+            <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+                <button class="btn btn-primary btn-sm" onclick="showFinanceForm()"><i class="lci lci-plus"></i> 记一笔</button>
+            </div>
+            <div id="financeRecords"></div>
+        </div>
+
+        <!-- 话术助手 -->
+        <div class="ops-section" id="ops-reply">
+            <h2><i class="lci lci-message-square"></i> 话术助手</h2>
+            <p style="color:var(--text-secondary);margin-bottom:16px;">选择场景，生成可以直接复制回复的话术</p>
+            <div class="ops-tabs">
+                <button class="ops-tab active" onclick="loadReplies('inquiry')">💬 询价场景</button>
+                <button class="ops-tab" onclick="loadReplies('confirm')">✅ 确认/交付</button>
+                <button class="ops-tab" onclick="loadReplies('followup')">📞 跟进/好评</button>
+            </div>
+            <div id="replyList"></div>
+        </div>
+    </main>
+</div>
+
+<!-- 客户表单模态框 -->
+<div class="modal-overlay" id="leadModal" style="display:none" onclick="closeModalOutside(event)">
+    <div class="modal modal-sm">
+        <div class="modal-header"><h3>添加客户</h3><button class="btn btn-ghost" onclick="closeModal()"><i class="lci lci-x"></i></button></div>
+        <div class="modal-body">
+            <div class="form-group"><label>客户名称/昵称</label><input type="text" id="leadName"></div>
+            <div class="form-row">
+                <div class="form-group"><label>来源</label><select id="leadSource"><option>闲鱼</option><option>小红书</option><option>知乎</option><option>朋友介绍</option><option>其他</option></select></div>
+                <div class="form-group"><label>状态</label><select id="leadStatus"><option value="新询价">新询价</option><option value="洽谈中">洽谈中</option><option value="已成交">已成交</option><option value="已流失">已流失</option></select></div>
+            </div>
+            <div class="form-group"><label>联系方式</label><input type="text" id="leadContact" placeholder="微信/QQ/手机"></div>
+            <div class="form-group"><label>需求描述</label><textarea id="leadReq" rows="2"></textarea></div>
+            <div class="form-group"><label>报价</label><input type="text" id="leadPrice" placeholder="¥XXX"></div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="saveLead()">保存</button></div>
+    </div>
+</div>
+
+<!-- 项目表单模态框 -->
+<div class="modal-overlay" id="projectModal" style="display:none" onclick="closeModalOutside(event)">
+    <div class="modal modal-sm">
+        <div class="modal-header"><h3>新建项目</h3><button class="btn btn-ghost" onclick="closeModal()"><i class="lci lci-x"></i></button></div>
+        <div class="modal-body">
+            <div class="form-group"><label>项目名称</label><input type="text" id="projName"></div>
+            <div class="form-row">
+                <div class="form-group"><label>客户</label><input type="text" id="projClient"></div>
+                <div class="form-group"><label>状态</label><select id="projStatus"><option value="进行中">进行中</option><option value="已完成">已完成</option><option value="暂停">暂停</option></select></div>
+            </div>
+            <div class="form-group"><label>描述</label><textarea id="projDesc" rows="2"></textarea></div>
+            <div class="form-row">
+                <div class="form-group"><label>价格(¥)</label><input type="number" id="projPrice"></div>
+                <div class="form-group"><label>已收款(¥)</label><input type="number" id="projPaid"></div>
+            </div>
+            <div class="form-group"><label>截止日期</label><input type="date" id="projDeadline"></div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="saveProject()">保存</button></div>
+    </div>
+</div>
+
+<!-- 财务表单模态框 -->
+<div class="modal-overlay" id="financeModal" style="display:none" onclick="closeModalOutside(event)">
+    <div class="modal modal-sm">
+        <div class="modal-header"><h3>记一笔</h3><button class="btn btn-ghost" onclick="closeModal()"><i class="lci lci-x"></i></button></div>
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="form-group"><label>类型</label><select id="financeType"><option value="收入">收入</option><option value="支出">支出</option></select></div>
+                <div class="form-group"><label>金额(¥)</label><input type="number" id="financeAmount"></div>
+            </div>
+            <div class="form-group"><label>备注</label><input type="text" id="financeNote" placeholder="如：爬虫单-张三"></div>
+        </div>
+        <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="saveFinance()">保存</button></div>
+    </div>
+</div>
+
+<script src="/script.js"></script>
+<script>
+// ===== 运营中心专用脚本 =====
+let currentPlatform = "xianyu";
+
+function switchOps(name) {
+    qsa(".ops-section").forEach(s => s.classList.remove("active"));
+    qsa(".tool-nav-item").forEach(n => n.classList.remove("active"));
+    const section = document.getElementById("ops-" + name);
+    const navItem = document.querySelector(`.tool-nav-item:nth-child(${{publish:5, leads:6, projects:7, finance:8, reply:9}[name]})`);
+    if (section) section.classList.add("active");
+    if (navItem) navItem.classList.add("active");
+    if (name === "leads") loadLeads();
+    if (name === "projects") loadProjects();
+    if (name === "finance") loadFinance();
+    if (name === "reply") loadReplies("inquiry");
+}
+
+function selectPlatform(p) {
+    currentPlatform = p;
+    document.querySelectorAll("#platformTabs .ops-tab").forEach(t => t.classList.remove("active"));
+    event.target.classList.add("active");
+}
+
+async function generateListing() {
+    const skills = document.getElementById("opsSkills")?.value?.trim() || "";
+    const price = document.getElementById("opsPrice")?.value?.trim() || "";
+    const notes = document.getElementById("opsNotes")?.value?.trim() || "";
+    
+    const r = await fetch("/api/ops/generate", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ platform: currentPlatform, custom: { skills, price, notes } })
+    });
+    const d = await r.json();
+    
+    const output = document.getElementById("listingOutput");
+    const platforms = { xianyu: "🐟 闲鱼", xiaohongshu: "📕 小红书", zhihu: "💡 知乎" };
+    output.style.display = "block";
+    output.innerHTML = `<div class="listing-title">${platforms[d.platform] || d.platform} · ${esc(d.title)}</div>
+        ${esc(d.description).replace(/\n/g, "<br>")}
+        <hr style="border:none;border-top:1px dashed var(--border);margin:12px 0;">
+        <div class="copy-hint" style="text-align:right;">
+            <button class="btn btn-sm btn-primary" onclick="copyListing()">📋 复制全文</button>
+        </div>`;
+    // Store for copy
+    window._lastListing = d.title + "\n\n" + d.description;
+}
+
+function copyListing() {
+    if (window._lastListing) {
+        navigator.clipboard.writeText(window._lastListing).then(() => alert("已复制到剪贴板！去平台发布吧"));
+    }
+}
+
+// ===== 客户管理 =====
+let leadsData = [];
+async function loadLeads() {
+    leadsData = await api("GET", "ops/leads");
+    const list = document.getElementById("leadsList");
+    if (!leadsData.length) {
+        list.innerHTML = '<div class="empty-state-ops"><i class="lci lci-inbox"></i><p>还没有客户线索，去发帖引流吧</p></div>';
+        return;
+    }
+    list.innerHTML = leadsData.map(l => `
+        <div class="lead-card">
+            <div class="lead-header">
+                <div><span class="lead-name">${esc(l.name)}</span> <span class="lead-source">${esc(l.source)}</span></div>
+                <span class="lead-status status-${l.status}">${esc(l.status)}</span>
+            </div>
+            ${l.requirement ? `<div style="font-size:13px;color:var(--text-secondary);margin-bottom:6px;">${esc(l.requirement)}</div>` : ""}
+            <div style="display:flex;gap:16px;font-size:12px;color:var(--text-muted);">
+                ${l.contact ? `<span>📞 ${esc(l.contact)}</span>` : ""}
+                ${l.price ? `<span>💰 ${esc(l.price)}</span>` : ""}
+                <span>📅 ${l.created_at}</span>
+            </div>
+        </div>
+    `).join("");
+}
+
+function showLeadForm() {
+    ["leadName","leadContact","leadReq","leadPrice"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+    document.getElementById("leadSource").value = "闲鱼";
+    document.getElementById("leadStatus").value = "新询价";
+    document.getElementById("leadModal").style.display = "flex";
+}
+async function saveLead() {
+    const data = {
+        name: document.getElementById("leadName")?.value?.trim(),
+        source: document.getElementById("leadSource")?.value,
+        contact: document.getElementById("leadContact")?.value?.trim(),
+        requirement: document.getElementById("leadReq")?.value?.trim(),
+        status: document.getElementById("leadStatus")?.value,
+        price: document.getElementById("leadPrice")?.value?.trim(),
+    };
+    if (!data.name) { alert("请输入客户名称"); return; }
+    await api("POST", "ops/leads", data);
+    closeModal();
+    loadLeads();
+}
+
+function searchLeads(q) {
+    const filtered = leadsData.filter(l => !q || l.name.includes(q) || (l.requirement || "").includes(q));
+    const list = document.getElementById("leadsList");
+    if (!filtered.length) {
+        list.innerHTML = '<div class="empty-state-ops"><i class="lci lci-search"></i><p>没有匹配的客户</p></div>';
+        return;
+    }
+    list.innerHTML = filtered.map(l => `
+        <div class="lead-card">
+            <div class="lead-header">
+                <div><span class="lead-name">${esc(l.name)}</span> <span class="lead-source">${esc(l.source)}</span></div>
+                <span class="lead-status status-${l.status}">${esc(l.status)}</span>
+            </div>
+            ${l.requirement ? `<div style="font-size:13px;color:var(--text-secondary);margin-bottom:6px;">${esc(l.requirement)}</div>` : ""}
+            <div style="display:flex;gap:16px;font-size:12px;color:var(--text-muted);">
+                ${l.contact ? `<span>📞 ${esc(l.contact)}</span>` : ""}
+                ${l.price ? `<span>💰 ${esc(l.price)}</span>` : ""}
+                <span>📅 ${l.created_at}</span>
+            </div>
+        </div>
+    `).join("");
+}
+
+// ===== 项目管理 =====
+async function loadProjects() {
+    const data = await api("GET", "ops/projects");
+    const list = document.getElementById("projectsList");
+    if (!data.length) {
+        list.innerHTML = '<div class="empty-state-ops"><i class="lci lci-trello"></i><p>还没有项目</p></div>';
+        return;
+    }
+    list.innerHTML = data.map(p => `
+        <div class="lead-card">
+            <div class="lead-header">
+                <span class="lead-name">${esc(p.name)}</span>
+                <span style="padding:2px 8px;border-radius:8px;font-size:11px;font-weight:500;background:${p.status === '已完成' ? '#f0fdf4;color:#22c55e' : p.status === '暂停' ? '#fef2f2;color:#ef4444' : '#eef2ff;color:var(--primary)'}">${esc(p.status)}</span>
+            </div>
+            ${p.description ? `<div style="font-size:13px;color:var(--text-secondary);margin-bottom:6px;">${esc(p.description)}</div>` : ""}
+            <div style="display:flex;gap:16px;font-size:12px;color:var(--text-muted);">
+                ${p.client ? `<span>👤 ${esc(p.client)}</span>` : ""}
+                ${p.price ? `<span>💰 ¥${p.price}</span>` : ""}
+                ${p.deadline ? `<span>📅 ${p.deadline}</span>` : ""}
+            </div>
+        </div>
+    `).join("");
+}
+
+function showProjectForm() {
+    ["projName","projClient","projDesc","projPrice","projPaid","projDeadline"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
+    document.getElementById("projStatus").value = "进行中";
+    document.getElementById("projectModal").style.display = "flex";
+}
+async function saveProject() {
+    const data = {
+        name: document.getElementById("projName")?.value?.trim(),
+        client: document.getElementById("projClient")?.value?.trim(),
+        description: document.getElementById("projDesc")?.value?.trim(),
+        price: parseFloat(document.getElementById("projPrice")?.value) || 0,
+        paid: parseFloat(document.getElementById("projPaid")?.value) || 0,
+        status: document.getElementById("projStatus")?.value,
+        deadline: document.getElementById("projDeadline")?.value,
+    };
+    if (!data.name) { alert("请输入项目名称"); return; }
+    await api("POST", "ops/projects", data);
+    closeModal();
+    loadProjects();
+}
+
+// ===== 财务 =====
+async function loadFinance() {
+    const data = await api("GET", "ops/finance");
+    const total = data.total || 0;
+    const records = data.records || [];
+    const income = records.filter(r => r.type === "收入").reduce((s, r) => s + (r.amount || 0), 0);
+    const expense = records.filter(r => r.type === "支出").reduce((s, r) => s + (r.amount || 0), 0);
+    
+    document.getElementById("financeStats").innerHTML = `
+        <div class="stat-box"><div class="stat-value" style="color:#22c55e">¥${total.toFixed(0)}</div><div class="stat-label">净收入</div></div>
+        <div class="stat-box"><div class="stat-value" style="color:#4f6ef7">¥${income.toFixed(0)}</div><div class="stat-label">总收入</div></div>
+        <div class="stat-box"><div class="stat-value" style="color:#ef4444">¥${expense.toFixed(0)}</div><div class="stat-label">总支出</div></div>
+        <div class="stat-box"><div class="stat-value">${records.length}</div><div class="stat-label">记录数</div></div>`;
+    
+    const list = document.getElementById("financeRecords");
+    if (!records.length) {
+        list.innerHTML = '<div class="empty-state-ops"><i class="lci lci-wallet"></i><p>还没有财务记录</p></div>';
+        return;
+    }
+    list.innerHTML = records.reverse().slice(0, 20).map(r => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:4px;">
+            <div>
+                <span style="font-weight:500;font-size:14px;">${esc(r.note || "")}</span>
+                <span style="font-size:12px;color:var(--text-muted);margin-left:8px;">${r.date}</span>
+            </div>
+            <span style="font-weight:600;font-size:15px;color:${r.type === '收入' ? '#22c55e' : '#ef4444'}">${r.type === '收入' ? '+' : '-'}¥${(r.amount || 0).toFixed(0)}</span>
+        </div>
+    `).join("");
+}
+
+function showFinanceForm() {
+    document.getElementById("financeType").value = "收入";
+    document.getElementById("financeAmount").value = "";
+    document.getElementById("financeNote").value = "";
+    document.getElementById("financeModal").style.display = "flex";
+}
+async function saveFinance() {
+    const data = {
+        type: document.getElementById("financeType")?.value,
+        amount: parseFloat(document.getElementById("financeAmount")?.value) || 0,
+        note: document.getElementById("financeNote")?.value?.trim(),
+    };
+    if (!data.amount) { alert("请输入金额"); return; }
+    await api("POST", "ops/finance", data);
+    closeModal();
+    loadFinance();
+}
+
+// ===== 话术助手 =====
+async function loadReplies(scene) {
+    document.querySelectorAll("#ops-reply .ops-tab").forEach(t => t.classList.remove("active"));
+    event?.target?.classList?.add("active");
+    
+    const r = await fetch("/api/ops/reply", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ context: scene })
+    });
+    const data = await r.json();
+    document.getElementById("replyList").innerHTML = data.map(r => `
+        <div class="reply-card" onclick="copyReply(this)">
+            <div class="reply-label">${esc(r.label)}</div>
+            <div class="reply-text">${esc(r.text)}</div>
+            <div class="copy-hint">点击复制这条回复</div>
+        </div>
+    `).join("");
+}
+
+function copyReply(el) {
+    const text = el.querySelector(".reply-text").textContent;
+    const label = el.querySelector(".reply-label").textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        const hint = el.querySelector(".copy-hint");
+        hint.textContent = "✅ 已复制！可以粘贴发送给客户了";
+        hint.style.color = "#22c55e";
+        setTimeout(() => { hint.textContent = "点击复制这条回复"; hint.style.color = ""; }, 2000);
+    });
+}
+
+// ===== 初始化 =====
+// Check if we should load based on URL hash
+window.onload = function() {
+    const hash = location.hash.slice(1);
+    if (hash && hash.startsWith("ops-")) {
+        const name = hash.replace("ops-", "");
+        switchOps(name);
+    }
+};
+</script>
+</body>
+</html>

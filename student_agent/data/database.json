@@ -1,0 +1,78 @@
+{
+  "notes": [
+    {
+      "id": 1,
+      "title": "红黑树笔记",
+      "content": "红黑树的插入操作核心是旋转和重新着色。需要保持五个性质：节点是红或黑、根是黑、叶是黑、红节点子节点为黑、任一节点到叶子的路径上黑节点数相同。",
+      "tags": "数据结构,算法",
+      "created_at": "2026-06-22",
+      "updated_at": "2026-06-22"
+    },
+    {
+      "id": 2,
+      "title": "数据库范式总结",
+      "content": "第一范式(1NF)：列不可再分。第二范式(2NF)：在1NF基础上，非主属性完全依赖于主键。第三范式(3NF)：在2NF基础上，没有传递依赖。BCNF：在3NF基础上，所有决定因素都是候选键。",
+      "tags": "数据库,课程",
+      "created_at": "2026-06-22",
+      "updated_at": "2026-06-22"
+    }
+  ],
+  "tasks": [
+    {
+      "id": 3,
+      "title": "完成数据库课程设计",
+      "description": "",
+      "deadline": "2026-07-15",
+      "priority": "高",
+      "category": "学业",
+      "status": "待办",
+      "created_at": "2026-06-22"
+    },
+    {
+      "id": 4,
+      "title": "写Python爬虫脚本",
+      "description": "",
+      "deadline": "2026-06-30",
+      "priority": "中",
+      "category": "赚钱",
+      "status": "待办",
+      "created_at": "2026-06-22"
+    }
+  ],
+  "flashcards": [
+    {
+      "id": 6,
+      "front": "什么是死锁？",
+      "back": "两个或多个进程互相等待对方释放资源，导致都无法继续执行的现象。",
+      "deck": "操作系统",
+      "difficulty": "中",
+      "next_review": "2026-06-22",
+      "created_at": "2026-06-22"
+    },
+    {
+      "id": 7,
+      "front": "TCP和UDP的区别",
+      "back": "TCP：面向连接、可靠、有序、有流量控制。UDP：无连接、不可靠、效率高。",
+      "deck": "计算机网络",
+      "difficulty": "中",
+      "next_review": "2026-06-22",
+      "created_at": "2026-06-22"
+    }
+  ],
+  "courses": [],
+  "projects": [
+    {
+      "id": 5,
+      "name": "学生兼职平台小程序",
+      "client": "校内创业项目",
+      "description": "帮校内学生对接兼职机会，使用微信小程序开发",
+      "budget": 3000,
+      "earned": 800,
+      "status": "进行中",
+      "deadline": "2026-08-01",
+      "created_at": "2026-06-22"
+    }
+  ],
+  "goals": [],
+  "nextId": 8
+}

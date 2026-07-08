@@ -1,0 +1,20 @@
+{
+  "leads": [
+    {
+      "id": 1,
+      "name": "??",
+      "source": "??",
+      "contact": "",
+      "requirement": "??????????",
+      "status": "???",
+      "price": "�300",
+      "note": "",
+      "created_at": "2026-06-22T16:19"
+    }
+  ],
+  "projects": [],
+  "finance": {
+    "total": 0,
+    "records": []
+  }
+}

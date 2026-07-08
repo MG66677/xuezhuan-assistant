@@ -1,0 +1,10 @@
+﻿node_modules/
+data/*.json
+.env
+*.log
+.DS_Store
+Thumbs.db
+.fix_*.py
+.fix_*.js
+.tunnel_*
+.check.js

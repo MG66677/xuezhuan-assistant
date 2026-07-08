@@ -1,0 +1,617 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>赚钱情报站 · 搜集赚钱信息</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/lucide@0.475.0/font/lucide.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #0f0f1a;
+  color: #e4e4e7;
+  min-height: 100vh;
+}
+/* Header */
+.header {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  border-bottom: 1px solid rgba(255,215,0,0.15);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.header .logo {
+  font-size: 22px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffd700, #ffaa00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.header .logo i { -webkit-text-fill-color: initial; color: #ffd700; margin-right: 6px; }
+.header .subtitle { font-size: 13px; color: #888; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.header-right .stats-badge {
+  background: rgba(255,215,0,0.1);
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: #ffd700;
+}
+.back-link { color: #888; text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 4px; }
+.back-link:hover { color: #ffd700; }
+
+/* Main layout */
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+/* Hero */
+.hero {
+  text-align: center;
+  padding: 40px 20px 30px;
+}
+.hero h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; color: #fff; }
+.hero h1 i { color: #ffd700; margin-right: 8px; }
+.hero p { color: #888; font-size: 15px; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+/* Stats row */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.stat-card {
+  background: #1a1a2e;
+  border: 1px solid #2a2a3e;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+.stat-card .num { font-size: 28px; font-weight: 800; color: #ffd700; }
+.stat-card .label { font-size: 12px; color: #888; margin-top: 4px; }
+
+/* Filters */
+.filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  align-items: center;
+}
+.filter-btn {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid #2a2a3e;
+  background: transparent;
+  color: #888;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all .2s;
+  font-family: inherit;
+}
+.filter-btn:hover { border-color: #ffd700; color: #ffd700; }
+.filter-btn.active { background: rgba(255,215,0,0.15); border-color: #ffd700; color: #ffd700; }
+.search-box {
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  align-items: center;
+  background: #1a1a2e;
+  border: 1px solid #2a2a3e;
+  border-radius: 20px;
+  padding: 0 16px;
+}
+.search-box i { color: #666; font-size: 16px; }
+.search-box input {
+  background: none;
+  border: none;
+  outline: none;
+  color: #e4e4e7;
+  padding: 10px 12px;
+  font-size: 14px;
+  width: 100%;
+  font-family: inherit;
+}
+.search-box input::placeholder { color: #555; }
+
+.add-btn {
+  padding: 10px 22px;
+  border-radius: 20px;
+  border: none;
+  background: linear-gradient(135deg, #ffd700, #ffaa00);
+  color: #1a1a2e;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  transition: transform .15s, box-shadow .2s;
+}
+.add-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(255,215,0,0.3); }
+
+/* Cards grid */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+.opp-card {
+  background: #1a1a2e;
+  border: 1px solid #2a2a3e;
+  border-radius: 14px;
+  padding: 20px;
+  transition: border-color .2s, transform .15s;
+  position: relative;
+  overflow: hidden;
+}
+.opp-card:hover { border-color: rgba(255,215,0,0.3); transform: translateY(-2px); }
+.opp-card .category-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+.cat-自由职业 { background: rgba(59,130,246,0.15); color: #60a5fa; }
+.cat-副业 { background: rgba(16,185,129,0.15); color: #34d399; }
+.cat-内容创作 { background: rgba(139,92,246,0.15); color: #a78bfa; }
+.cat-电商 { background: rgba(249,115,22,0.15); color: #fb923c; }
+.cat-投资理财 { background: rgba(236,72,153,0.15); color: #f472b6; }
+.cat-被动收入 { background: rgba(6,182,212,0.15); color: #22d3ee; }
+.cat-其他 { background: rgba(168,85,247,0.15); color: #c084fc; }
+
+.opp-card h3 { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 8px; line-height: 1.4; }
+.opp-card .desc { font-size: 13px; color: #a0a0a0; line-height: 1.6; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.opp-card .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+.opp-card .meta-item { font-size: 12px; color: #888; display: flex; align-items: center; gap: 4px; }
+.opp-card .meta-item i { font-size: 14px; }
+.opp-card .meta-item .income { color: #ffd700; font-weight: 600; }
+.opp-card .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
+.opp-card .tags span {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #25253e;
+  color: #888;
+}
+.opp-card .card-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  border-top: 1px solid #25253e;
+  padding-top: 12px;
+  margin-top: 4px;
+}
+.opp-card .card-actions button {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all .15s;
+  font-family: inherit;
+}
+.opp-card .card-actions button:hover { background: #25253e; }
+.opp-card .card-actions .del-btn:hover { color: #ef4444; }
+.opp-card .card-actions .edit-btn:hover { color: #ffd700; }
+.opp-card .source-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 10px;
+  color: #666;
+  background: #25253e;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+.opp-card .empty-stars { color: #333; }
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 200;
+  backdrop-filter: blur(4px);
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: #1a1a2e;
+  border: 1px solid #2a2a3e;
+  border-radius: 16px;
+  padding: 28px;
+  width: 100%;
+  max-width: 540px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal h2 { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+.modal h2 i { color: #ffd700; }
+.form-group { margin-bottom: 16px; }
+.form-group label { font-size: 13px; color: #888; display: block; margin-bottom: 4px; font-weight: 500; }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #2a2a3e;
+  background: #0f0f1a;
+  color: #e4e4e7;
+  font-size: 14px;
+  outline: none;
+  transition: border-color .2s;
+  font-family: inherit;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #ffd700; }
+.form-group textarea { min-height: 100px; resize: vertical; }
+.form-group select option { background: #1a1a2e; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+.modal-actions .btn-cancel {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid #2a2a3e;
+  background: transparent;
+  color: #888;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+}
+.modal-actions .btn-cancel:hover { background: #25253e; }
+.modal-actions .btn-submit {
+  padding: 10px 24px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #ffd700, #ffaa00);
+  color: #1a1a2e;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #555;
+  grid-column: 1 / -1;
+}
+.empty-state i { font-size: 48px; margin-bottom: 16px; }
+.empty-state p { font-size: 15px; }
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #1a1a2e;
+  border: 1px solid #2a2a3e;
+  color: #e4e4e7;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  z-index: 300;
+  opacity: 0;
+  transition: all .3s;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 60px;
+  color: #666;
+  grid-column: 1 / -1;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading i { animation: spin 1s linear infinite; font-size: 32px; }
+
+@media (max-width: 600px) {
+  .cards-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 24px; }
+  .filters { flex-direction: column; align-items: stretch; }
+  .search-box { min-width: auto; }
+  .header .subtitle { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo"><i class="lci lci-trending-up"></i> 赚钱情报站</div>
+    <span class="subtitle">搜集 · 整理 · 发现赚钱机会</span>
+  </div>
+  <div class="header-right">
+    <span class="stats-badge" id="totalBadge">📊 0 条信息</span>
+    <a href="/" class="back-link"><i class="lci lci-arrow-left"></i> 返回</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="hero">
+    <h1><i class="lci lci-search"></i> 赚钱信息搜集站</h1>
+    <p>搜集全网赚钱机会、副业思路、自由职业信息，帮你发现适合自己的赚钱方式。</p>
+  </div>
+
+  <div class="stats-row" id="statsRow">
+    <div class="stat-card"><div class="num" id="statTotal">0</div><div class="label">全部信息</div></div>
+    <div class="stat-card"><div class="num" id="statFreelance">0</div><div class="label">自由职业</div></div>
+    <div class="stat-card"><div class="num" id="statSide">0</div><div class="label">副业</div></div>
+    <div class="stat-card"><div class="num" id="statContent">0</div><div class="label">内容创作</div></div>
+    <div class="stat-card"><div class="num" id="statPassive">0</div><div class="label">被动收入</div></div>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" data-cat="all">🏠 全部</button>
+    <button class="filter-btn" data-cat="自由职业">💼 自由职业</button>
+    <button class="filter-btn" data-cat="副业">🚀 副业</button>
+    <button class="filter-btn" data-cat="内容创作">✍️ 内容创作</button>
+    <button class="filter-btn" data-cat="电商">🛒 电商</button>
+    <button class="filter-btn" data-cat="投资理财">📈 投资理财</button>
+    <button class="filter-btn" data-cat="被动收入">💤 被动收入</button>
+    <button class="filter-btn" data-cat="其他">📌 其他</button>
+    <div class="search-box">
+      <i class="lci lci-search"></i>
+      <input type="text" id="searchInput" placeholder="搜索赚钱信息..." />
+    </div>
+    <button class="add-btn" onclick="openModal()"><i class="lci lci-plus"></i> 添加信息</button>
+  </div>
+
+  <div class="cards-grid" id="cardsGrid">
+    <div class="loading"><i class="lci lci-loader-2"></i><br>加载中...</div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2><i class="lci lci-plus-circle"></i> <span id="modalTitle">添加赚钱信息</span></h2>
+    <div class="form-group">
+      <label>标题 *</label>
+      <input id="fTitle" placeholder="例：Python 远程兼职开发" />
+    </div>
+    <div class="form-group">
+      <label>描述 *</label>
+      <textarea id="fDesc" placeholder="描述这个赚钱机会的详细信息、要求、注意事项等"></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>类别</label>
+        <select id="fCategory">
+          <option value="自由职业">💼 自由职业</option>
+          <option value="副业" selected>🚀 副业</option>
+          <option value="内容创作">✍️ 内容创作</option>
+          <option value="电商">🛒 电商</option>
+          <option value="投资理财">📈 投资理财</option>
+          <option value="被动收入">💤 被动收入</option>
+          <option value="其他">📌 其他</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>收入范围</label>
+        <input id="fIncome" placeholder="例：¥3000-8000/月" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>难度</label>
+        <select id="fDifficulty">
+          <option value="⭐入门">⭐ 入门</option>
+          <option value="⭐中等" selected>⭐ 中等</option>
+          <option value="⭐较难">⭐ 较难</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>平台</label>
+        <input id="fPlatform" placeholder="例：闲鱼、小红书、Upwork" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>标签（用逗号分隔）</label>
+      <input id="fTags" placeholder="例：编程,远程,兼职" />
+    </div>
+    <div class="form-group">
+      <label>来源链接</label>
+      <input id="fUrl" placeholder="https://..." />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn-submit" onclick="saveOpp()">✅ 保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '/api/opportunities';
+let allOpps = [];
+let currentCategory = 'all';
+let editingId = null;
+
+async function loadOpps() {
+  try {
+    const params = new URLSearchParams();
+    if (currentCategory !== 'all') params.set('category', currentCategory);
+    const q = document.getElementById('searchInput').value.trim();
+    if (q) params.set('search', q);
+    const url = params.toString() ? `${API}?${params}` : API;
+    const res = await fetch(url);
+    allOpps = await res.json();
+    render();
+  } catch (e) {
+    document.getElementById('cardsGrid').innerHTML = '<div class="empty-state"><i class="lci lci-cloud-off"></i><p>加载失败，请检查服务器</p></div>';
+  }
+}
+
+function render() {
+  const grid = document.getElementById('cardsGrid');
+  if (!allOpps.length) {
+    grid.innerHTML = '<div class="empty-state"><i class="lci lci-inbox"></i><p>还没有赚钱信息，点击「添加信息」开始搜集吧！</p></div>';
+  } else {
+    grid.innerHTML = allOpps.map(o => {
+      const catClass = `cat-${o.category}`;
+      const diffStars = o.difficulty || '⭐中等';
+      return `<div class="opp-card">
+        <span class="category-tag ${catClass}">${o.category}</span>
+        <span class="source-badge">${o.source || '手动'}</span>
+        <h3>${o.title}</h3>
+        <div class="desc">${o.description}</div>
+        <div class="meta">
+          ${o.income_range ? `<span class="meta-item"><i class="lci lci-wallet"></i> <span class="income">${o.income_range}</span></span>` : ''}
+          <span class="meta-item"><i class="lci lci-trending-up"></i> ${diffStars}</span>
+          ${o.platform ? `<span class="meta-item"><i class="lci lci-globe"></i> ${o.platform}</span>` : ''}
+          <span class="meta-item"><i class="lci lci-calendar"></i> ${o.created_at}</span>
+        </div>
+        ${o.tags ? `<div class="tags">${o.tags.split(',').map(t => `<span>${t.trim()}</span>`).join('')}</div>` : ''}
+        <div class="card-actions">
+          ${o.source_url ? `<a href="${o.source_url}" target="_blank" style="color:#60a5fa;text-decoration:none;font-size:13px;margin-right:auto;"><i class="lci lci-external-link"></i> 查看来源</a>` : '<span style="margin-right:auto;"></span>'}
+          <button class="edit-btn" onclick="editOpp(${o.id})"><i class="lci lci-pencil"></i> 编辑</button>
+          <button class="del-btn" onclick="deleteOpp(${o.id})"><i class="lci lci-trash-2"></i> 删除</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  updateStats();
+}
+
+function updateStats() {
+  const all = allOpps;
+  document.getElementById('statTotal').textContent = all.length;
+  document.getElementById('statFreelance').textContent = all.filter(o => o.category === '自由职业').length;
+  document.getElementById('statSide').textContent = all.filter(o => o.category === '副业').length;
+  document.getElementById('statContent').textContent = all.filter(o => o.category === '内容创作').length;
+  document.getElementById('statPassive').textContent = all.filter(o => ['被动收入','投资理财'].includes(o.category)).length;
+  document.getElementById('totalBadge').textContent = `📊 ${all.length} 条信息`;
+}
+
+function openModal(data) {
+  editingId = data ? data.id : null;
+  document.getElementById('modalTitle').textContent = data ? '编辑赚钱信息' : '添加赚钱信息';
+  document.getElementById('fTitle').value = data ? data.title : '';
+  document.getElementById('fDesc').value = data ? data.description : '';
+  document.getElementById('fCategory').value = data ? data.category : '副业';
+  document.getElementById('fIncome').value = data ? (data.income_range || '') : '';
+  document.getElementById('fDifficulty').value = data ? (data.difficulty || '⭐中等') : '⭐中等';
+  document.getElementById('fPlatform').value = data ? (data.platform || '') : '';
+  document.getElementById('fTags').value = data ? (data.tags || '') : '';
+  document.getElementById('fUrl').value = data ? (data.source_url || '') : '';
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+  editingId = null;
+}
+
+async function saveOpp() {
+  const title = document.getElementById('fTitle').value.trim();
+  const desc = document.getElementById('fDesc').value.trim();
+  if (!title || !desc) { showToast('⚠️ 标题和描述不能为空'); return; }
+  const data = {
+    title,
+    description: desc,
+    category: document.getElementById('fCategory').value,
+    income_range: document.getElementById('fIncome').value.trim(),
+    difficulty: document.getElementById('fDifficulty').value,
+    platform: document.getElementById('fPlatform').value.trim(),
+    tags: document.getElementById('fTags').value.trim(),
+    source_url: document.getElementById('fUrl').value.trim(),
+    source: editingId ? undefined : '手动添加',
+  };
+  try {
+    if (editingId) {
+      await fetch(`${API}/${editingId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      showToast('✅ 已更新');
+    } else {
+      await fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      showToast('✅ 已添加');
+    }
+    closeModal();
+    loadOpps();
+  } catch (e) { showToast('❌ 保存失败'); }
+}
+
+function editOpp(id) {
+  const o = allOpps.find(x => x.id === id);
+  if (o) openModal(o);
+}
+
+async function deleteOpp(id) {
+  if (!confirm('确定删除这条信息吗？')) return;
+  try {
+    await fetch(`${API}/${id}`, { method: 'DELETE' });
+    showToast('🗑️ 已删除');
+    loadOpps();
+  } catch (e) { showToast('❌ 删除失败'); }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Filter buttons
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    currentCategory = this.dataset.cat;
+    loadOpps();
+  });
+});
+
+// Search with debounce
+let searchTimer;
+document.getElementById('searchInput').addEventListener('input', function() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => loadOpps(), 300);
+});
+
+// Close modal on overlay click
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// Enter to submit
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Enter' && document.getElementById('modal').classList.contains('show')) {
+    const active = document.activeElement;
+    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA') && active.id !== 'fDesc') {
+      // Allow Enter in textarea for newlines
+      if (active.id === 'fDesc') return;
+      saveOpp();
+    }
+  }
+});
+
+// Init
+loadOpps();
+</script>
+</body>
+</html>

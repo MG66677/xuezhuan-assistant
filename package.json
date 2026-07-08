@@ -1,0 +1,14 @@
+﻿{
+  "name": "xuezhuan-assistant",
+  "version": "2.0.0",
+  "description": "马振奥的学赚助手 - 学业 · 接单 · 自动运营 · 赚钱情报",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["education", "freelance", "assistant"],
+  "license": "MIT"
+}

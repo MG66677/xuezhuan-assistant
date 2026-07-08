@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学赚助手 - 项目管理</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/lucide@0.475.0/font/lucide.css">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<aside class="sidebar">
+    <div class="sidebar-header"><div class="logo"><i class="lci lci-graduation-cap"></i><span>学赚助手</span></div></div>
+    <nav class="sidebar-nav">
+        <a href="/" class="nav-item"><i class="lci lci-layout-dashboard"></i><span>仪表盘</span></a>
+        <a href="/chat" class="nav-item"><i class="lci lci-message-circle"></i><span>AI 对话</span></a>
+        <div class="nav-divider"></div><div class="nav-label">学业工具</div>
+        <a href="/notes" class="nav-item"><i class="lci lci-notebook"></i><span>笔记管理</span></a>
+        <a href="/tasks" class="nav-item"><i class="lci lci-list-checks"></i><span>任务看板</span></a>
+        <a href="/flashcards" class="nav-item"><i class="lci lci-brain"></i><span>复习闪卡</span></a>
+        <a href="/schedule" class="nav-item"><i class="lci lci-calendar"></i><span>课程表</span></a>
+        <div class="nav-divider"></div><div class="nav-label">赚钱工具</div>
+        <a href="/projects" class="nav-item active"><i class="lci lci-briefcase"></i><span>项目管理</span></a>
+    </nav>
+    <div class="sidebar-footer"><button class="mode-toggle" onclick="toggleMode()"><i class="lci lci-repeat"></i><span id="modeLabel">学业</span></button></div>
+</aside>
+<main class="main-content">
+    <div class="page-header"><h1><i class="lci lci-briefcase"></i> 项目管理</h1><button class="btn btn-primary" onclick="openProjectEditor()"><i class="lci lci-plus"></i> 新建项目</button></div>
+    <div class="projects-stats" id="projectsStats"></div>
+    <div class="projects-grid" id="projectsGrid"></div>
+</main>
+<div class="modal-overlay" id="projectModal" style="display:none" onclick="closeModalOutside(event)">
+    <div class="modal modal-md">
+        <div class="modal-header"><input type="text" id="projectName" placeholder="项目名称" class="modal-title-input"><button class="btn btn-ghost" onclick="closeModal()"><i class="lci lci-x"></i></button></div>
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="form-group"><label>客户/平台</label><input type="text" id="projectClient" placeholder="如：某某客户"></div>
+                <div class="form-group"><label>状态</label><select id="projectStatus"><option value="进行中">进行中</option><option value="已完成">已完成</option><option value="暂停">暂停</option></select></div>
+            </div>
+            <div class="form-group"><label>描述</label><textarea id="projectDesc" class="modal-textarea" rows="3" placeholder="项目描述..."></textarea></div>
+            <div class="form-row">
+                <div class="form-group"><label>预算（¥）</label><input type="number" id="projectBudget" step="0.01" min="0"></div>
+                <div class="form-group"><label>已收入（¥）</label><input type="number" id="projectEarned" step="0.01" min="0"></div>
+                <div class="form-group"><label>截止日期</label><input type="date" id="projectDeadline"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="deleteProject()" id="deleteProjectBtn" style="color:#ef4444;display:none">删除</button>
+            <div class="modal-footer-right"><button class="btn btn-ghost" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="saveProject()">保存</button></div>
+        </div>
+    </div>
+</div>
+<script src="/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>学赚助手 - 任务看板</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/lucide@0.475.0/font/lucide.css">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<aside class="sidebar">
+    <div class="sidebar-header"><div class="logo"><i class="lci lci-graduation-cap"></i><span>学赚助手</span></div></div>
+    <nav class="sidebar-nav">
+        <a href="/" class="nav-item"><i class="lci lci-layout-dashboard"></i><span>仪表盘</span></a>
+        <a href="/chat" class="nav-item"><i class="lci lci-message-circle"></i><span>AI 对话</span></a><div class="nav-divider"></div>
+        <div class="nav-label">学业工具</div>
+        <a href="/notes" class="nav-item"><i class="lci lci-notebook"></i><span>笔记管理</span></a>
+        <a href="/tasks" class="nav-item active"><i class="lci lci-list-checks"></i><span>任务看板</span></a>
+        <a href="/flashcards" class="nav-item"><i class="lci lci-brain"></i><span>复习闪卡</span></a>
+        <a href="/schedule" class="nav-item"><i class="lci lci-calendar"></i><span>课程表</span></a>
+        <div class="nav-divider"></div><div class="nav-label">赚钱工具</div>
+        <a href="/projects" class="nav-item"><i class="lci lci-briefcase"></i><span>项目管理</span></a>
+    </nav>
+    <div class="sidebar-footer"><button class="mode-toggle" onclick="toggleMode()"><i class="lci lci-repeat"></i><span id="modeLabel">学业</span></button></div>
+</aside>
+<main class="main-content">
+    <div class="page-header"><h1><i class="lci lci-list-checks"></i> 任务看板</h1><button class="btn btn-primary" onclick="openTaskEditor()"><i class="lci lci-plus"></i> 新建任务</button></div>
+    <div class="toolbar">
+        <div class="filter-group">
+            <button class="filter-btn active" data-filter="all" onclick="filterTasks('all')">全部</button>
+            <button class="filter-btn" data-filter="待办" onclick="filterTasks('待办')">待办</button>
+            <button class="filter-btn" data-filter="进行中" onclick="filterTasks('进行中')">进行中</button>
+            <button class="filter-btn" data-filter="已完成" onclick="filterTasks('已完成')">已完成</button>
+        </div>
+    </div>
+    <div class="task-grid" id="taskGrid"></div>
+</main>
+<div class="modal-overlay" id="taskModal" style="display:none" onclick="closeModalOutside(event)">
+    <div class="modal modal-md">
+        <div class="modal-header"><input type="text" id="taskTitle" placeholder="任务标题" class="modal-title-input"><button class="btn btn-ghost" onclick="closeModal()"><i class="lci lci-x"></i></button></div>
+        <div class="modal-body">
+            <textarea id="taskDesc" placeholder="任务描述..." class="modal-textarea" rows="3"></textarea>
+            <div class="form-row">
+                <div class="form-group"><label>截止日期</label><input type="date" id="taskDeadline"></div>
+                <div class="form-group"><label>优先级</label><select id="taskPriority"><option value="高">高</option><option value="中" selected>中</option><option value="低">低</option></select></div>
+                <div class="form-group"><label>分类</label><select id="taskCategory"><option value="学业">学业</option><option value="赚钱">赚钱</option></select></div>
+                <div class="form-group"><label>状态</label><select id="taskStatus"><option value="待办">待办</option><option value="进行中">进行中</option><option value="已完成">已完成</option></select></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-ghost" onclick="deleteTask()" id="deleteTaskBtn" style="color:#ef4444;display:none">删除</button>
+            <div class="modal-footer-right"><button class="btn btn-ghost" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="saveTask()">保存</button></div>
+        </div>
+    </div>
+</div>
+<script src="/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>马振奥的学赚助手 — 学业 · 接单 · 自动运营</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/lucide@0.475.0/font/lucide.css">
+<link rel="stylesheet" href="/style.css">
+<style>
+/* Dark theme overrides */
+:root {
+  --bg: #0f0f1a;
+  --card-bg: #1a1a2e;
+  --surface: #1a1a2e;
+  --border: #2a2a3e;
+  --text: #e4e4e7;
+  --text-secondary: #888;
+  --text-muted: #666;
+  --primary: #ffd700;
+  --primary-hover: #e6c200;
+  --primary-bg: rgba(255,215,0,0.1);
+  --success: #22c55e;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+  --shadow: 0 1px 3px rgba(0,0,0,.2);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.3);
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo"><i class="lci lci-wrench"></i> 马振奥的学赚助手</div>
+      <div class="logo-subtitle">学业 · 接单 · 自动运营 · 赚钱情报</div>
+    </div>
+    <nav id="nav">
+      <div class="nav-section-label">主菜单</div>
+      <a class="nav-item active" data-page="dashboard"><i class="lci lci-layout-dashboard"></i> 工作台</a>
+      <a class="nav-item" data-page="study"><i class="lci lci-graduation-cap"></i> 学业</a>
+      <a class="nav-item" data-page="freelance"><i class="lci lci-briefcase"></i> 接单工具</a>
+      <a class="nav-item" data-page="operations"><i class="lci lci-bot"></i> 运营中心</a>
+      <a class="nav-item" data-page="chat"><i class="lci lci-message-circle"></i> AI 聊天</a>
+      <a class="nav-item" data-page="news"><i class="lci lci-newspaper"></i> AI 资讯</a>
+      <a class="nav-item" data-page="earnings"><i class="lci lci-trending-up"></i> 赚钱情报</a>
+      <div class="nav-section-label" style="margin-top:16px;">管理</div>
+      <a class="nav-item" data-page="finance"><i class="lci lci-wallet"></i> 财务</a>
+      <a class="nav-item" data-page="settings"><i class="lci lci-settings"></i> 设置</a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="mode-btn" onclick="toggleMode()">
+        <i class="lci lci-repeat"></i> <span id="modeLabel">学业</span>
+      </button>
+    </div>
+  </aside>
+
+  <main id="main">
+    <!-- 工作台 -->
+    <section class="page active" id="page-dashboard">
+      <div class="page-header"><h1><i class="lci lci-layout-dashboard"></i> 工作台</h1><span class="page-date" id="todayDate"></span></div>
+      <div class="stats-grid" id="dashStats"></div>
+      <div id="deviceInfo" class="device-info-bar"></div>
+      <div class="dash-grid">
+        <div class="card"><div class="card-header"><h3><i class="lci lci-list-checks"></i> 待办任务</h3><a class="nav-item-inline" onclick="switchPage('study')">查看更多</a></div><div class="card-body" id="dashTasks"></div></div>
+        <div class="card"><div class="card-header"><h3><i class="lci lci-users"></i> 最新客户</h3><a class="nav-item-inline" onclick="switchPage('operations')">查看更多</a></div><div class="card-body" id="dashLeads"></div></div>
+        <div class="card"><div class="card-header"><h3><i class="lci lci-trending-up"></i> 收入概览</h3></div><div class="card-body"><div id="dashFinance"></div></div></div>
+        <div class="card"><div class="card-header"><h3><i class="lci lci-newspaper"></i> AI 快讯</h3><a class="nav-item-inline" onclick="switchPage('news')">更多</a></div><div class="card-body news-feed" id="dashNews"></div></div>
+<div class="card quick-add-card"><div class="card-header"><h3><i class="lci lci-zap"></i> 快速添加</h3></div><div class="card-body"><div class="quick-add-tabs"><button class="qa-tab active" data-qa="task">任务</button><button class="qa-tab" data-qa="note">笔记</button><button class="qa-tab" data-qa="finance">记账</button></div><div class="qa-panel active" id="qa-task"><div class="qa-input-row"><input id="qaTaskInput" placeholder="输入任务标题，Enter快速添加" style="flex:1"><select id="qaTaskCat"><option>学业</option><option>赚钱</option><option>生活</option></select><select id="qaTaskPrio"><option value="中">中</option><option value="高">高</option><option value="低">低</option></select><button class="btn btn-primary btn-sm" onclick="quickAddTask()">添加</button></div></div><div class="qa-panel" id="qa-note"><div class="qa-input-row"><input id="qaNoteInput" placeholder="输入笔记标题，Enter快速添加" style="flex:1"><button class="btn btn-primary btn-sm" onclick="quickAddNote()">添加笔记</button></div></div><div class="qa-panel" id="qa-finance"><div class="qa-input-row"><select id="qaFinanceType"><option value="收入">收入</option><option value="支出">支出</option></select><input type="number" id="qaFinanceAmount" placeholder="金额" style="flex:1"><input id="qaFinanceCat" placeholder="分类" style="flex:1"><button class="btn btn-primary btn-sm" onclick="quickAddFinance()">添加</button></div></div></div></div>
+      </div>
+    </section>
+
+    <!-- 学业 -->
+    <section class="page" id="page-study">
+      <div class="page-header"><h1><i class="lci lci-graduation-cap"></i> 学业管理</h1><div class="header-actions"><button class="btn btn-primary" onclick="openTaskModal()"><i class="lci lci-plus"></i> 添加任务</button><button class="btn btn-primary" onclick="openNoteModal()"><i class="lci lci-plus"></i> 添加笔记</button></div></div>
+      <div class="sub-tabs"><button class="sub-tab active" onclick="switchSubTab('study','tasks',this)"><i class="lci lci-list-checks"></i> 待办任务</button><button class="sub-tab" onclick="switchSubTab('study','notes',this)"><i class="lci lci-notebook"></i> 学习笔记</button><button class="sub-tab" onclick="switchSubTab('study','flashcards',this)"><i class="lci lci-brain"></i> 闪卡记忆</button><button class="sub-tab" onclick="switchSubTab('study','schedule',this)"><i class="lci lci-calendar"></i> 课程表</button></div>
+      <div class="sub-page active" id="sub-study-tasks"><div class="filter-bar"><input class="search-input" id="taskSearch" placeholder="搜索任务..." oninput="loadTasks()"><select class="search-input" id="taskFilter" style="width:120px" onchange="loadTasks()"><option value="">全部</option><option value="学业">学业</option><option value="赚钱">赚钱</option><option value="生活">生活</option></select></div><div id="tasksList" class="tasks-list"></div></div>
+      <div class="sub-page" id="sub-study-notes"><div class="filter-bar"><input class="search-input" id="noteSearch" placeholder="搜索笔记..." oninput="loadNotes()"><button class="btn btn-primary" onclick="openNoteModal()"><i class="lci lci-plus"></i> 新建笔记</button></div><div id="notesGrid" class="notes-grid"></div></div>
+      <div class="sub-page" id="sub-study-flashcards"><div class="filter-bar"><select class="search-input" id="deckFilter" onchange="loadFlashcards()"><option value="">全部牌组</option></select><button class="btn btn-primary" onclick="openFlashcardModal()"><i class="lci lci-plus"></i> 新建闪卡</button></div><div id="flashcardsList" class="flashcards-grid"></div></div>
+      <div class="sub-page" id="sub-study-schedule"><div class="filter-bar"><button class="btn btn-primary" onclick="openCourseModal()"><i class="lci lci-plus"></i> 添加课程</button></div><div id="scheduleGrid" class="schedule-grid"></div></div>
+    </section>
+
+    <!-- 接单工具 -->
+    <section class="page" id="page-freelance">
+      <div class="page-header"><h1><i class="lci lci-briefcase"></i> 接单工具</h1><div class="header-actions"><button class="btn btn-outline" onclick="loadPricing()"><i class="lci lci-tag"></i> 查看报价</button></div></div>
+      <div class="sub-tabs"><button class="sub-tab active" onclick="switchSubTab('freelance','scraper',this)"><i class="lci lci-globe"></i> 网页采集</button><button class="sub-tab" onclick="switchSubTab('freelance','excel',this)"><i class="lci lci-file-spreadsheet"></i> Excel处理</button><button class="sub-tab" onclick="switchSubTab('freelance','pdf',this)"><i class="lci lci-file-text"></i> PDF生成</button><button class="sub-tab" onclick="switchSubTab('freelance','pricing',this)"><i class="lci lci-tag"></i> 报价参考</button><button class="sub-tab" onclick="switchSubTab('freelance','output',this)"><i class="lci lci-folder-open"></i> 输出文件</button></div>
+      <div class="sub-page active" id="sub-freelance-scraper">
+        <div class="tool-card"><h3>网页数据采集工具</h3><p>爬取商品信息、文章内容、招聘数据等，输出Excel/CSV/JSON格式</p>
+        <div class="form-group"><label>目标网址</label><input id="scraperUrl" placeholder="https://example.com/page"></div>
+        <div class="form-row"><div class="form-group"><label>CSS选择器</label><input id="scraperSelector" value="body"></div><div class="form-group"><label>输出格式</label><select id="scraperFormat"><option value="json">JSON</option><option value="csv">CSV</option></select></div></div>
+        <button class="btn btn-primary" onclick="runScraper()"><i class="lci lci-play"></i> 开始采集</button>
+        <div id="scraperResult" class="result-box"></div></div>
+      </div>
+      <div class="sub-page" id="sub-freelance-excel">
+        <div class="tool-card"><h3>Excel 数据处理工具</h3><p>数据清洗、合并拆分、统计报表，支持CSV和Excel格式</p>
+        <div class="form-group"><label>操作类型</label><select id="excelCommand"><option value="info">查看信息</option><option value="clean">数据清洗</option><option value="merge">合并文件</option><option value="stats">统计报表</option></select></div>
+        <div class="form-group"><label>文件路径</label><input id="excelInput" placeholder="data/input.xlsx"></div>
+        <button class="btn btn-primary" onclick="runExcel()"><i class="lci lci-play"></i> 执行操作</button>
+        <div id="excelResult" class="result-box"></div></div>
+      </div>
+      <div class="sub-page" id="sub-freelance-pdf">
+        <div class="tool-card"><h3>PDF 报告生成</h3><p>从数据生成专业PDF报告，支持图表和表格</p>
+        <div class="form-group"><label>数据文件</label><input id="pdfInput" placeholder="data/report.json"></div>
+        <div class="form-group"><label>报告标题</label><input id="pdfTitle" value="数据分析报告"></div>
+        <button class="btn btn-primary" onclick="runPdf()"><i class="lci lci-play"></i> 生成报告</button>
+        <div id="pdfResult" class="result-box"></div></div>
+      </div>
+      <div class="sub-page" id="sub-freelance-pricing">
+        <div id="pricingGrid" class="pricing-grid"></div>
+      </div>
+      <div class="sub-page" id="sub-freelance-output">
+        <div id="outputList" class="output-list"></div>
+      </div>
+    </section>
+
+    <!-- 运营中心 -->
+    <section class="page" id="page-operations">
+      <div class="page-header"><h1><i class="lci lci-bot"></i> 运营中心</h1></div>
+      <div class="ops-grid">
+        <div class="card"><div class="card-header"><h3><i class="lci lci-file-text"></i> 自动发帖</h3></div><div class="card-body"><button class="btn btn-primary" onclick="generatePosts()"><i class="lci lci-zap"></i> 生成帖子</button><div id="opsStatus"></div></div></div>
+        <div class="card"><div class="card-header"><h3><i class="lci lci-message-square"></i> 客户跟进</h3></div><div class="card-body"><button class="btn btn-primary" onclick="followUp()"><i class="lci lci-send"></i> 跟进客户</button><div id="followUpResult"></div></div></div>
+      </div>
+      <div class="card" style="margin-top:16px;"><div class="card-header"><h3><i class="lci lci-list"></i> 帖子管理</h3></div><div class="card-body" id="postsList"></div></div>
+      <div class="card" style="margin-top:16px;"><div class="card-header"><h3><i class="lci lci-users"></i> 客户管理</h3></div><div class="card-body" id="leadsList"></div></div>
+    </section>
+
+    <!-- AI 聊天 -->
+    <section class="page" id="page-chat">
+      <div class="page-header"><h1><i class="lci lci-message-circle"></i> AI 聊天</h1></div>
+      <div id="chatMessages" class="chat-messages"></div>
+      <div class="chat-input-area"><input id="chatInput" placeholder="输入消息，按 Enter 发送" onkeydown="if(event.key==='Enter')sendChat()"><button class="btn btn-primary" onclick="sendChat()"><i class="lci lci-send"></i> 发送</button><button class="btn btn-outline" onclick="clearChat()" style="margin-left:4px;"><i class="lci lci-trash-2"></i> 清空</button></div>
+    </section>
+
+    <!-- AI 资讯 -->
+    <section class="page" id="page-news">
+      <div class="page-header"><h1><i class="lci lci-newspaper"></i> AI 资讯</h1></div>
+      <div id="newsList" class="news-list"></div>
+    </section>
+
+    <!-- 财务 -->
+    <section class="page" id="page-finance">
+      <div class="page-header"><h1><i class="lci lci-wallet"></i> 财务管理</h1><div class="header-actions"><button class="btn btn-primary" onclick="openFinanceModal()"><i class="lci lci-plus"></i> 添加记录</button></div></div>
+      <div class="stats-grid"><div class="stat-card"><div class="stat-value" id="financeTotal">¥0</div><div class="stat-label">总收入</div></div></div>
+      <div class="card"><div class="card-header"><h3><i class="lci lci-list"></i> 收支记录</h3><button class="btn btn-outline" onclick="clearFinance()" style="padding:4px 12px;font-size:12px;">清空</button></div><div class="card-body" id="financeRecords"></div></div>
+    </section>
+
+    <!-- 设置 -->
+    <section class="page" id="page-settings">
+      <div class="page-header"><h1><i class="lci lci-settings"></i> 设置</h1></div>
+      <div class="card"><div class="card-header"><h3><i class="lci lci-database"></i> 数据管理</h3></div><div class="card-body"><button class="btn btn-outline" onclick="if(confirm('确定清空所有数据？')){localStorage.clear();fetch('/api/chat/clear',{method:'POST'});location.reload()}"><i class="lci lci-trash-2"></i> 重置所有数据</button></div></div>
+    </section>
+  </main>
+</div>
+
+<!-- 任务弹窗 -->
+<div class="modal-overlay" id="taskModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h2><i class="lci lci-list-checks"></i> <span id="taskModalTitle">添加任务</span></h2>
+    <div class="form-group"><label>标题</label><input id="taskTitle"></div>
+    <div class="form-group"><label>描述</label><textarea id="taskDesc"></textarea></div>
+    <div class="form-row"><div class="form-group"><label>优先级</label><select id="taskPriority"><option value="高">高</option><option value="中" selected>中</option><option value="低">低</option></select></div><div class="form-group"><label>分类</label><select id="taskCategory"><option value="学业">学业</option><option value="赚钱">赚钱</option><option value="生活">生活</option></select></div></div>
+    <div class="form-group"><label>截止日期</label><input type="date" id="taskDeadline"></div>
+    <div class="modal-actions"><button class="btn-cancel" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="saveTask()">保存</button></div>
+  </div>
+</div>
+
+<!-- 笔记弹窗 -->
+<div class="modal-overlay" id="noteModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h2><i class="lci lci-notebook"></i> <span id="noteModalTitle">新建笔记</span></h2>
+    <div class="form-group"><label>标题</label><input id="noteTitle"></div>
+    <div class="form-group"><label>内容</label><textarea id="noteContent" style="min-height:150px;"></textarea></div>
+    <div class="form-group"><label>标签</label><input id="noteTags" placeholder="用逗号分隔"></div>
+    <div class="modal-actions"><button class="btn-cancel" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="saveNote()">保存</button></div>
+  </div>
+</div>
+
+<!-- 闪卡弹窗 -->
+<div class="modal-overlay" id="flashcardModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h2><i class="lci lci-brain"></i> <span id="fcModalTitle">新建闪卡</span></h2>
+    <div class="form-group"><label>正面</label><textarea id="fcFront" style="min-height:80px;"></textarea></div>
+    <div class="form-group"><label>背面</label><textarea id="fcBack" style="min-height:80px;"></textarea></div>
+    <div class="modal-actions"><button class="btn-cancel" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="saveFlashcard()">保存</button></div>
+  </div>
+</div>
+
+<!-- 课程弹窗 -->
+<div class="modal-overlay" id="courseModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h2><i class="lci lci-calendar"></i> 添加课程</h2>
+    <div class="form-group"><label>课程名称</label><input id="courseTitle"></div>
+    <div class="form-group"><label>描述</label><textarea id="courseDesc"></textarea></div>
+    <div class="form-group"><label>链接</label><input id="courseUrl" placeholder="课程链接（可选）"></div>
+    <div class="modal-actions"><button class="btn-cancel" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="saveCourse()">保存</button></div>
+  </div>
+</div>
+
+<!-- 财务弹窗 -->
+<div class="modal-overlay" id="financeModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <h2><i class="lci lci-wallet"></i> 添加收支记录</h2>
+    <div class="form-row"><div class="form-group"><label>类型</label><select id="financeType"><option value="收入">收入</option><option value="支出">支出</option></select></div><div class="form-group"><label>金额</label><input type="number" id="financeAmount" placeholder="0"></div></div>
+    <div class="form-group"><label>分类</label><input id="financeCategory" placeholder="例：接单、兼职"></div>
+    <div class="form-group"><label>备注</label><input id="financeNote" placeholder="备注信息"></div>
+    <div class="modal-actions"><button class="btn-cancel" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="saveFinance()">保存</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>副业引擎 - 工具台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/lucide@0.475.0/font/lucide.css">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="tools-layout">
+    <aside class="tools-sidebar">
+        <h3 style="margin-top:8px;">🔧 工具台</h3>
+        <div class="tool-nav-item active" onclick="switchTool('scraper')" id="nav-scraper">
+            <i class="lci lci-globe"></i> 数据采集
+        </div>
+        <div class="tool-nav-item" onclick="switchTool('excel')" id="nav-excel">
+            <i class="lci lci-file-spreadsheet"></i> Excel处理
+        </div>
+        <div class="tool-nav-item" onclick="switchTool('pdf')" id="nav-pdf">
+            <i class="lci lci-file-text"></i> PDF报告
+        </div>
+        <div class="tool-nav-item" onclick="switchTool('output')" id="nav-output">
+            <i class="lci lci-folder-open"></i> 我的产出
+        </div>
+        <div class="tool-nav-item" onclick="switchTool('pricing')" id="nav-pricing">
+            <i class="lci lci-tag"></i> 报价参考
+        </div>
+        <hr style="border:none;border-top:1px solid var(--border);margin:16px 8px;">
+        <div style="padding:0 12px;display:flex;flex-direction:column;gap:6px;">
+            <a href="/operations" class="btn btn-primary" style="width:100%;justify-content:center;font-size:13px;">
+                <i class="lci lci-bot"></i> 运营中心
+            </a>
+            <a href="/" class="btn btn-ghost" style="width:100%;justify-content:center;font-size:13px;">
+                <i class="lci lci-arrow-left"></i> 返回首页
+            </a>
+        </div>
+    </aside>
+
+    <main class="tools-content">
+        <!-- 数据采集 -->
+        <div class="tool-page active" id="page-scraper">
+            <h2><i class="lci lci-globe"></i> 网页数据采集</h2>
+            <div class="stats-row" id="scraperStats">
+                <div class="stat-box"><div class="stat-value">¥100-500</div><div class="stat-label">参考价格</div></div>
+                <div class="stat-box"><div class="stat-value">⭐4</div><div class="stat-label">需求热度</div></div>
+            </div>
+            <div class="form-group">
+                <label>目标网址</label>
+                <input type="url" id="scraperUrl" placeholder="https://example.com/page">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>CSS 选择器</label>
+                    <input type="text" id="scraperSelector" placeholder="如: .article-title, #content, h1" value="body">
+                </div>
+                <div class="form-group">
+                    <label>输出格式</label>
+                    <select id="scraperFormat">
+                        <option value="json">JSON</option>
+                        <option value="csv">CSV</option>
+                        <option value="excel">Excel</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="runScraper()"><i class="lci lci-play"></i> 开始采集</button>
+            <div id="scraperResult"></div>
+        </div>
+
+        <!-- Excel处理 -->
+        <div class="tool-page" id="page-excel">
+            <h2><i class="lci lci-file-spreadsheet"></i> Excel自动处理</h2>
+            <div class="stats-row">
+                <div class="stat-box"><div class="stat-value">¥100-300</div><div class="stat-label">参考价格</div></div>
+                <div class="stat-box"><div class="stat-value">上传来处理</div><div class="stat-label">支持 .xlsx .csv</div></div>
+            </div>
+            <div class="form-group">
+                <label>功能选择</label>
+                <select id="excelCommand">
+                    <option value="clean">数据清洗（去重/补空/格式化）</option>
+                    <option value="analyze">数据分析（统计/报表）</option>
+                    <option value="merge">合并多个文件</option>
+                    <option value="format">Excel格式美化</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>上传文件</label>
+                <input type="file" id="excelFile" accept=".xlsx,.csv" onchange="uploadExcel()">
+            </div>
+            <div id="excelFilePath" style="display:none"></div>
+            <button class="btn btn-primary" onclick="runExcel()" id="excelRunBtn" disabled>
+                <i class="lci lci-play"></i> 开始处理
+            </button>
+            <div id="excelResult"></div>
+        </div>
+
+        <!-- PDF报告 -->
+        <div class="tool-page" id="page-pdf">
+            <h2><i class="lci lci-file-text"></i> PDF报告生成</h2>
+            <div class="stats-row">
+                <div class="stat-box"><div class="stat-value">¥200-1000</div><div class="stat-label">参考价格</div></div>
+            </div>
+            <div class="form-group">
+                <label>数据文件（Excel/CSV/JSON）</label>
+                <input type="file" id="pdfFile" accept=".xlsx,.csv,.json" onchange="uploadPdf()">
+            </div>
+            <div class="form-group">
+                <label>报告标题</label>
+                <input type="text" id="pdfTitle" placeholder="数据分析报告">
+            </div>
+            <button class="btn btn-primary" onclick="runPdf()" id="pdfRunBtn" disabled>
+                <i class="lci lci-play"></i> 生成报告
+            </button>
+            <div id="pdfResult"></div>
+        </div>
+
+        <!-- 产出管理 -->
+        <div class="tool-page" id="page-output">
+            <h2><i class="lci lci-folder-open"></i> 我的产出</h2>
+            <p style="color:var(--text-secondary);margin-bottom:20px;">这里列出了所有生成的采集数据、Excel文件和PDF报告，可以直接下载发给客户。</p>
+            <div id="outputList" class="result-box">
+                <div class="result-body">
+                    <div class="empty-state" style="padding:20px;text-align:center;color:var(--text-muted);">
+                        <i class="lci lci-inbox" style="font-size:32px;display:block;margin-bottom:8px;"></i>
+                        <p>还没有产出文件，先去工具台生成吧</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 报价参考 -->
+        <div class="tool-page" id="page-pricing">
+            <h2><i class="lci lci-tag"></i> 报价参考</h2>
+            <p style="color:var(--text-secondary);margin-bottom:20px;">以下是市场参考价，你可以根据任务复杂度调整</p>
+            <div class="pricing-table" id="pricingTable"></div>
+        </div>
+    </main>
+</div>
+
+<script src="/script.js"></script>
+</body>
+</html>
+
